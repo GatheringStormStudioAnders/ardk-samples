@@ -47,6 +47,18 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Samples/WPS/Scenes/CompassScene.unity
     guid: f036d5120f667497d9097f9e60b22d7f
+  - enabled: 1
+    path: Assets/Samples/Semantics/Scenes/vpsSemantic.unity
+    guid: ee49cbeb2450f61499a7e2fd01a73e3c
+  - enabled: 1
+    path: Assets/projectAssets/assetsScenes/cardiffVPSTest/cardiffGateVPS.unity
+    guid: 6e5167f609294564ba52d2f1b718ac45
+  - enabled: 1
+    path: Assets/Samples/LightEstimation/LightEstimation.unity
+    guid: 3686832fdd0592646af55cad944f47cf
+  - enabled: 1
+    path: Assets/Samples/arPortal/arPortal.unity
+    guid: 03878e84a7d6bba46a68cc4eae99c7dc
   m_configObjects:
     Niantic.Lightship.AR.LightshipSettings: {fileID: 11400000, guid: 05b0489c7d3114fe3b5a5321c06a66dd, type: 2}
     Niantic.Lightship.AR.WPSSettings: {fileID: 11400000, guid: ee6baa83fec89444b99181fc1ccffc2a, type: 2}

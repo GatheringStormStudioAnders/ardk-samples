@@ -17,8 +17,8 @@ TagManager:
   - ARDK_FusedDepth
   - 
   - ignorable
-  - 
-  - 
+  - arPortalColliders
+  - player
   - 
   - 
   - 
