@@ -1,5 +1,8 @@
 ﻿using UnityEngine.Rendering;
 using TMPro;
+using System;
+using UnityEngine.UI;
+using Niantic.Experimental.Lightship.AR.WorldPositioning;
 
 namespace UnityEngine.XR.ARFoundation.Samples
 {
@@ -12,6 +15,11 @@ namespace UnityEngine.XR.ARFoundation.Samples
         [SerializeField]
         [Tooltip("The ARCameraManager which will produce frame events containing light estimation information.")]
         ARCameraManager m_CameraManager;
+
+        public TextMeshProUGUI lightIntensity;
+        public TextMeshProUGUI rotationDisplay;
+
+        public Image colourDisplay;
 
         /// <summary>
         /// Get or set the <c>ARCameraManager</c>.
@@ -79,18 +87,29 @@ namespace UnityEngine.XR.ARFoundation.Samples
 
         void FrameChanged(ARCameraFrameEventArgs args)
         {
-            frameCount++;
-            frameCountUI.text = "Frame: " + frameCount.ToString();
-            Debug.Log("FrameChanged");
-            if (args.lightEstimation.averageBrightness.HasValue)
-            {
-                brightness = args.lightEstimation.averageBrightness.Value;
-                m_Light.intensity = brightness.Value;
-            }
-            else
-            {
-                brightness = null;
-            }
+            //frameCount++;
+            //frameCountUI.text = "Frame: " + frameCount.ToString();
+            //Debug.Log("FrameChanged");
+            //if (args.lightEstimation.averageBrightness.HasValue)
+            //{
+            //    brightness = args.lightEstimation.averageBrightness.Value;
+            //    m_Light.intensity = brightness.Value;
+            //    //lightIntensity.text = "brightness : " + brightness.Value.ToString();
+            //}
+            //else
+            //{
+            //    brightness = null;
+            //    //lightIntensity.text = "brightness : null";
+            //}
+
+            //if (args.lightEstimation.mainLightIntensityLumens.HasValue)
+            //{
+            //    m_Light.intensity = args.lightEstimation.mainLightIntensityLumens.Value;
+            //}
+            //else
+            //{
+            //    mainLightIntensityLumens = null;
+            //}
 
             if (args.lightEstimation.averageColorTemperature.HasValue)
             {
@@ -102,52 +121,50 @@ namespace UnityEngine.XR.ARFoundation.Samples
                 colorTemperature = null;
             }
 
-            if (args.lightEstimation.colorCorrection.HasValue)
-            {
-                colorCorrection = args.lightEstimation.colorCorrection.Value;
-                m_Light.color = colorCorrection.Value;
-            }
-            else
-            {
-                colorCorrection = null;
-            }
-            
-            if (args.lightEstimation.mainLightDirection.HasValue)
-            {
-                mainLightDirection = args.lightEstimation.mainLightDirection;
-                m_Light.transform.rotation = Quaternion.LookRotation(mainLightDirection.Value);
-            }
+            //if (args.lightEstimation.colorCorrection.HasValue)
+            //{
+            //    colorCorrection = args.lightEstimation.colorCorrection.Value;
+            //    m_Light.color = colorCorrection.Value;
+            //}
+            //else
+            //{
+            //    colorCorrection = null;
+            //}
+
+            //if (args.lightEstimation.mainLightDirection.HasValue)
+            //{
+            //    mainLightDirection = args.lightEstimation.mainLightDirection;
+            //    Quaternion rotation = Quaternion.LookRotation(mainLightDirection.Value);
+            //    m_Light.transform.rotation = rotation;
+            //    //rotationDisplay.text = "Rotation : " + mainLightDirection.Value.ToString();
+            //}
+            //else
+            //{
+            //    //rotationDisplay.text = "Rotation : null"; 
+            //}
 
             if (args.lightEstimation.mainLightColor.HasValue)
             {
+                //colourDisplay.color = mainLightColor.Value;
                 mainLightColor = args.lightEstimation.mainLightColor;
                 m_Light.color = mainLightColor.Value;
             }
             else
             {
                 mainLightColor = null;
+                //colourDisplay.color = new Color(0, 0, 0, 0);
             }
 
-            if (args.lightEstimation.mainLightIntensityLumens.HasValue)
-            {
-                mainLightIntensityLumens = args.lightEstimation.mainLightIntensityLumens;
-                m_Light.intensity = args.lightEstimation.averageMainLightBrightness.Value;
-            }
-            else
-            {
-                mainLightIntensityLumens = null;
-            }
-
-            if (args.lightEstimation.ambientSphericalHarmonics.HasValue)
-            {
-                sphericalHarmonics = args.lightEstimation.ambientSphericalHarmonics;
-                RenderSettings.ambientMode = AmbientMode.Skybox;
-                RenderSettings.ambientProbe = sphericalHarmonics.Value;
-            }
-            else
-            {
-                sphericalHarmonics = null;
-            }
+            //if (args.lightEstimation.ambientSphericalHarmonics.HasValue)
+            //{
+            //    sphericalHarmonics = args.lightEstimation.ambientSphericalHarmonics;
+            //    RenderSettings.ambientMode = AmbientMode.Skybox;
+            //    RenderSettings.ambientProbe = sphericalHarmonics.Value;
+            //}
+            //else
+            //{
+            //    sphericalHarmonics = null;
+            //}
         }
 
         public Light m_Light;
