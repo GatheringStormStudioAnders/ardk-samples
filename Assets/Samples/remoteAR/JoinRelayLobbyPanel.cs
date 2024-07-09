@@ -21,5 +21,11 @@ namespace Sugar.Multiplayer
         {
             relayManager.JoinRelay(codeInput.text);
         }
+
+        public void DisplayLobbyCode(string joinCode)
+        {
+            joinCodeDisplay.text = "Lobby Code : " + joinCode;
+            joinCodeDisplay.transform.parent.gameObject.SetActive(true);
+        }
     }
 }

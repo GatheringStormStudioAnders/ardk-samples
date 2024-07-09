@@ -4,9 +4,13 @@ namespace Sugar.Multiplayer
     using System.Collections.Generic;
 
     using UnityEngine;
+    using UnityEngine.Events;
+
     using Unity.Netcode;
     using Unity.Netcode.Transports.UTP;
+
     using Unity.Networking.Transport.Relay;
+
     using Unity.Services.Core;
     using Unity.Services.Authentication;
     using Unity.Services.Relay;
@@ -18,7 +22,13 @@ namespace Sugar.Multiplayer
     {
         // Start is called before the first frame update
 
-        public TextMeshProUGUI joinCodeDisplay;
+        [Header("Non Dependant UI")]
+        public JoinRelayLobbyPanel lobbyPanel;
+
+        [Header("Events")]
+        public UnityEvent onLobbyCreated;
+        public UnityEvent onLobbyJoined;
+
         async void Start()
         {
             await UnityServices.InitializeAsync();
@@ -39,7 +49,8 @@ namespace Sugar.Multiplayer
                 NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
                 NetworkManager.Singleton.StartHost();
                 Debug.LogError("joinCode : " + joinCode);
-                joinCodeDisplay.text = "joinCode : " + joinCode;
+                lobbyPanel.DisplayLobbyCode(joinCode);
+                onLobbyCreated?.Invoke();
             }
             catch (RelayServiceException exception)
             {
@@ -57,6 +68,8 @@ namespace Sugar.Multiplayer
 
                 NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
                 NetworkManager.Singleton.StartClient();
+
+                onLobbyJoined?.Invoke();
             }
             catch (RelayServiceException exception)
             {
