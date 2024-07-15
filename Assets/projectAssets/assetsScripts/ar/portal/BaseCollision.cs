@@ -3,8 +3,9 @@ namespace Sugar.Collision
     using System.Collections;
     using System.Collections.Generic;
     using UnityEngine;
+    using Unity.Netcode;
 
-    public class BaseCollision : MonoBehaviour
+    public class BaseCollision : NetworkBehaviour
     {
         public void OnTriggerEnter(Collider col)
         {

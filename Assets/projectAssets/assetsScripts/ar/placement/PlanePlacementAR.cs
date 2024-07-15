@@ -34,6 +34,12 @@ namespace Sugar.AR.Placement
 
         private void Init()
         {
+#if UNITY_EDITOR
+            enabled = false;
+#endif
+#if UNITY_STANDALONE_WIN
+            enabled = false;
+#endif
             planePlacement.aRRaycastManager = GetComponent<ARRaycastManager>();
             planePlacement.arCamera = FindObjectOfType<ARCameraManager>();
         }

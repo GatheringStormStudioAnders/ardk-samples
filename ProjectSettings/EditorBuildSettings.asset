@@ -6,7 +6,7 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 0
-    path: Assets/Samples/remoteAR/remoteAR.unity
+    path: Assets/Samples/remoteAR/andersSolution/remoteAR.unity
     guid: 542a109e2f13dc34390b65310586ab9e
   - enabled: 0
     path: Assets/Samples/Home/Scenes/Home.unity
