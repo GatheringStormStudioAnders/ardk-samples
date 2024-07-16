@@ -13,14 +13,13 @@ namespace Sugar.Multiplayer
 
         public NetworkObject networkObject;
         private NetworkEnvironmentManager environmentManager;
-        private PlayerNetworkManager playerNetworkManager;
 
         public NetworkVariable<int> materialIndex = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
         public List<Material> userMaterials = new List<Material>();
 
         public Renderer playerMeshRender;
-
+        public PlayerNetworkManager playerNetworkManager;
         public Transform playerARPosition;
         public Transform XROrigin;
 
@@ -30,10 +29,12 @@ namespace Sugar.Multiplayer
         {
             Init();
 
-            playerNetworkManager.FindPlayerObjectsServerRPC();
-            transform.SetParent(environmentManager.transform);
-        }
+            transform.SetParent(environmentManager.networkedParent);
 
+            playerNetworkManager.UpdateNetworkedPlayersServerRpc();
+
+            UpdateMaterial();
+        }
         public void Init()
         {
 #if UNITY_EDITOR
@@ -52,11 +53,7 @@ namespace Sugar.Multiplayer
         }
         public void Update()
         {
-            if (!isEditor)
-            {
-                transform.localPosition = playerARPosition.position;
-            }
-            else
+            if(isEditor)
             {
                 if (IsOwner)
                 {
@@ -66,14 +63,12 @@ namespace Sugar.Multiplayer
                     moveDir.z = Input.GetAxisRaw("Vertical");
 
                     XROrigin.position += moveDir * speed * Time.deltaTime;
-
-                    transform.position = new Vector3(playerARPosition.position.x, playerARPosition.position.y, playerARPosition.position.z);
                 }
             }
-        }
 
-        [ClientRpc]
-        public void UpdateMaterialClientRPC()
+            transform.position = new Vector3(playerARPosition.position.x, playerARPosition.position.y, playerARPosition.position.z);
+        }
+        public void UpdateMaterial()
         {
             Debug.LogError("Updating Material on : " + transform.name);
             playerMeshRender.material = Instantiate(userMaterials[materialIndex.Value]);

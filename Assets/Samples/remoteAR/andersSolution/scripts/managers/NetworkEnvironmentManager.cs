@@ -12,6 +12,8 @@ namespace Sugar.Multiplayer
     using Sugar.Multiplayer.Interaction;
     public class NetworkEnvironmentManager : NetworkBehaviour
     {
+        public Transform networkedParent;
+
         public List<ARRemotePlayer> players = new List<ARRemotePlayer>();
 
         public List<GameObject> levelPrefabs = new List<GameObject>();
@@ -26,33 +28,13 @@ namespace Sugar.Multiplayer
 
         public void SpawnBroom()
         {
-            GameObject broom = Instantiate(levelPrefabs[0], levelPrefabs[0].transform.position, Quaternion.identity, transform);
+            GameObject broom = Instantiate(levelPrefabs[0], networkedParent);
             broom.GetComponent<NetworkObject>().Spawn(true);
-            broom.transform.SetParent(transform);
-            broom.transform.localPosition = levelPrefabs[0].transform.position;
-            broom.transform.localRotation = levelPrefabs[0].transform.rotation;
-            broom.GetComponent<PickUpARObject>().currentLocalPosition = levelPrefabs[0].transform.position;
+            broom.transform.SetParent(networkedParent);
+            //broom.transform.localPosition = levelPrefabs[0].transform.position;
+            //broom.transform.localRotation = levelPrefabs[0].transform.rotation;
+            broom.GetComponent<PickUpARObject>().currentLocalPosition.Value = levelPrefabs[0].transform.localPosition;
         }
-        //public void SetPlayerWorldPositioning(ARRemotePlayer player)
-        //{
-        //    player.transform.SetParent(transform);
-        //    if (!players.Contains(player))
-        //    {
-        //        players.Add(player);
-        //    }
-        //}
-
-        //[ServerRpc(RequireOwnership = false)]
-        //public void OnClientConnectServerRpc(ulong clientID)
-        //{
-        //    for (int i = 0; i < NetworkManager.Singleton.ConnectedClientsList.Count; i++)
-        //    {
-        //        if (NetworkManager.Singleton.ConnectedClientsList[i].ClientId == clientID)
-        //        {
-        //            NetworkManager.Singleton.ConnectedClientsList[i].PlayerObject.TrySetParent(transform);
-        //        }
-        //    }
-        //}
 
         private void Update()
         {

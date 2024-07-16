@@ -8,6 +8,7 @@ namespace Sugar.AR.Placement
     using UnityEngine.EventSystems;
     using UnityEngine.XR.ARFoundation;
     using UnityEngine.XR.ARSubsystems;
+    using UnityEngine.UI;
 
     [RequireComponent(typeof(ARRaycastManager))]
     public class PlanePlacementAR : MonoBehaviour
@@ -20,6 +21,7 @@ namespace Sugar.AR.Placement
 
         public GameObject placementIndicator;
         public Transform arContent;
+        public Button placeButton;
 
         public Vector2 scaleLimits;
 
@@ -36,9 +38,11 @@ namespace Sugar.AR.Placement
         {
 #if UNITY_EDITOR
             enabled = false;
+            placeButton.gameObject.SetActive(true);
 #endif
 #if UNITY_STANDALONE_WIN
             enabled = false;
+            placeButton.gameObject.SetActive(true);
 #endif
             planePlacement.aRRaycastManager = GetComponent<ARRaycastManager>();
             planePlacement.arCamera = FindObjectOfType<ARCameraManager>();
@@ -83,7 +87,7 @@ namespace Sugar.AR.Placement
                 placementIndicator.SetActive(false);
             }
 
-            arContent.gameObject.SetActive(placementIndicator.activeSelf);
+            arContent.GetChild(0).gameObject.SetActive(placementIndicator.activeSelf);
 
             if (placementIndicator.activeSelf)
             {

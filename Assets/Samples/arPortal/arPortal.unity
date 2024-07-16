@@ -6107,9 +6107,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 265413379}
-  - component: {fileID: 265413380}
-  - component: {fileID: 265413382}
-  - component: {fileID: 265413381}
   m_Layer: 0
   m_Name: ====arCore====
   m_TagString: Untagged
@@ -6126,7 +6123,7 @@ Transform:
   m_GameObject: {fileID: 265413378}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 15, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -6134,19 +6131,51 @@ Transform:
   - {fileID: 1920830399}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &265413380
+--- !u!1 &276094392
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 276094393}
+  - component: {fileID: 276094394}
+  m_Layer: 0
+  m_Name: networkedObjects
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &276094393
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 276094392}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1839589081292773517}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &276094394
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 265413378}
+  m_GameObject: {fileID: 276094392}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3164019679
+  GlobalObjectIdHash: 1316847794
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -6154,31 +6183,6 @@ MonoBehaviour:
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
---- !u!114 &265413381
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 265413378}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0e1d7a1f94664250893fc1085d167449, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &265413382
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 265413378}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 57c28ed28c284b8bbb08e7d5bded1bd9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _putInSharedOrigin: 1
 --- !u!1 &356835253
 GameObject:
   m_ObjectHideFlags: 0
@@ -8138,7 +8142,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &925779911
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13418,7 +13422,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   uniquePlayerIndex: 00000000010000000200000003000000
-  networkedPlayers: []
 --- !u!4 &1134868653
 Transform:
   m_ObjectHideFlags: 0
@@ -13642,7 +13645,7 @@ Transform:
   m_GameObject: {fileID: 1173370459}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 753.29565, y: 1280, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -14743,7 +14746,7 @@ GameObject:
   - component: {fileID: 1719176119}
   - component: {fileID: 1719176118}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: environment
   m_TagString: environmentTransform
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14788,7 +14791,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Broom - (12, 23, 23)
+  m_text: arEnvirn - (12, 23, 23)
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -15215,6 +15218,7 @@ MonoBehaviour:
         m_CallState: 2
   placementIndicator: {fileID: 1661863666}
   arContent: {fileID: 1839589081292773517}
+  placeButton: {fileID: 5932992600266263542}
   scaleLimits: {x: 0.1, y: 2}
   debugEditorMode: 0
   isLocked: 0
@@ -15525,7 +15529,7 @@ GameObject:
   - component: {fileID: 2078770336}
   - component: {fileID: 2078770335}
   m_Layer: 5
-  m_Name: Text (TMP) (1)
+  m_Name: broom
   m_TagString: broomTransform
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -15675,7 +15679,7 @@ Transform:
   m_GameObject: {fileID: 2124301673}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.01, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -16302,6 +16306,7 @@ GameObject:
   m_Component:
   - component: {fileID: 543450653303075421}
   - component: {fileID: 919132149584832744}
+  - component: {fileID: 919132149584832747}
   - component: {fileID: 919132149584832746}
   - component: {fileID: 919132149584832745}
   m_Layer: 11
@@ -16367,6 +16372,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   portal: {fileID: 919132149584832744}
+--- !u!114 &919132149584832747
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 919132149584832743}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 55612662
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
 --- !u!1 &943655751653353103
 GameObject:
   m_ObjectHideFlags: 0
@@ -16887,11 +16912,12 @@ Transform:
   m_GameObject: {fileID: 2646007093095405302}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 15, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7833212374710562108}
+  - {fileID: 276094393}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!222 &1867244305810098935
@@ -17205,7 +17231,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1839589081292773517}
-  - component: {fileID: 2646007093095405304}
   - component: {fileID: 2646007093095405303}
   m_Layer: 0
   m_Name: ====arContent====
@@ -17226,30 +17251,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cb2d2389a1451147a1e32eea6441148, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  networkedParent: {fileID: 276094393}
   players: []
   levelPrefabs:
   - {fileID: 3863514074580800828, guid: a03cd67100b02aa44a8c422826df435d, type: 3}
   arenvironment: {fileID: 0}
---- !u!114 &2646007093095405304
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2646007093095405302}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2645681070
-  AlwaysReplicateAsRoot: 0
-  SynchronizeTransform: 1
-  ActiveSceneSynchronization: 1
-  SceneMigrationSynchronization: 0
-  SpawnWithObservers: 1
-  DontDestroyWithOwner: 0
-  AutoObjectParentSync: 1
 --- !u!222 &2658867968698225609
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -18793,6 +18799,18 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 925779910}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
         m_CallState: 2
 --- !u!33 &6013221271473856831
 MeshFilter:

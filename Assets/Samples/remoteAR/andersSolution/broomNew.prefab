@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 8818427710558844575}
   - component: {fileID: 3089014428028576935}
   m_Layer: 13
-  m_Name: broom
+  m_Name: broomNew
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

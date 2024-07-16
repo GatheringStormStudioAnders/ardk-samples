@@ -10,86 +10,15 @@ namespace Sugar.Multiplayer
     public class PlayerNetworkManager : NetworkBehaviour
     {
         public List<int> uniquePlayerIndex = new List<int>();
-        public List<NetworkedPlayer> networkedPlayers = new List<NetworkedPlayer>();
 
         [ServerRpc(RequireOwnership = false)]
-        public void FindPlayerObjectsServerRPC()
+        public void UpdateNetworkedPlayersServerRpc()
         {
-            NetworkObject[] networkBehaviours = FindObjectsOfType<NetworkObject>();
-
-            for(int i = 0; i < networkBehaviours.Length; i++)
+            for(int i = 0; i < NetworkManager.Singleton.ConnectedClientsList.Count; i++)
             {
-                if (networkBehaviours[i].IsPlayerObject)
-                {
-                    AddToNetworkedPlayers(networkBehaviours[i]);
-                }
-            }
-
-            UpdateNetworkedPlayers();
-        }
-
-        //[ServerRpc(RequireOwnership = false)]
-        //public NetworkedPlayer FetchNetworkedPlayerServerRpc(ulong userID)
-        //{
-        //    for(int i = 0; i < networkedPlayers.Count; i++)
-        //    {
-        //        if(networkedPlayers[i] != null)
-        //        {
-        //            if (networkedPlayers[i].ownerID == userID)
-        //            {
-        //                return networkedPlayers[i];
-        //            }
-        //        }
-        //    }
-
-        //    return null;
-        //}
-
-        public void AddToNetworkedPlayers(NetworkObject playerObject)
-        {
-            ARRemotePlayer arRemotePlayer = playerObject.GetComponent<ARRemotePlayer>();
-            if (arRemotePlayer)
-            {
-                bool isRegistered = false;
-                for(int i = 0; i < networkedPlayers.Count; i++)
-                {
-                    if(networkedPlayers[i].ownerID == playerObject.OwnerClientId)
-                    {
-                        isRegistered = true;
-                        break;
-                    }
-                }
-                if (!isRegistered)
-                {
-                    NetworkedPlayer networkedPlayer = new NetworkedPlayer();
-                    networkedPlayer.ownerID = playerObject.OwnerClientId;
-                    networkedPlayer.playerReference = arRemotePlayer;
-                    networkedPlayers.Add(networkedPlayer);
-
-                    if (IsOwnedByServer)
-                    {
-                        SetPlayerMaterial(arRemotePlayer);
-                    }
-                    //SetPlayerMaterial(arRemotePlayer);
-                }
-            }
-        }
-
-        public void SetPlayerMaterial(ARRemotePlayer arRemotePlayer)
-        {
-            int materialIndexPicked = Random.Range(0, uniquePlayerIndex.Count);
-            int materialValue = uniquePlayerIndex[materialIndexPicked];
-
-            uniquePlayerIndex.RemoveAt(materialIndexPicked);
-            //Debug.LogError("Server picked : " + materialIndexPicked + " on player " + arRemotePlayer.name);
-            arRemotePlayer.materialIndex.Value = materialValue;
-        }
-
-        public void UpdateNetworkedPlayers()
-        {
-            for(int i = 0; i < networkedPlayers.Count; i++)
-            {
-                networkedPlayers[i].playerReference.UpdateMaterialClientRPC();
+                ARRemotePlayer arPlayer = NetworkManager.Singleton.ConnectedClientsList[i].PlayerObject.GetComponent<ARRemotePlayer>();
+                arPlayer.materialIndex.Value = uniquePlayerIndex[i];
+                arPlayer.UpdateMaterial();
             }
         }
     }

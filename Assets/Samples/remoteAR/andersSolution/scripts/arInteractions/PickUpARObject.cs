@@ -20,22 +20,25 @@ namespace Sugar.Multiplayer.Interaction
         [SerializeField]
         private InteractionPrompt interactionPrompt;
 
+        public NetworkEnvironmentManager environmentManager;
+
         [SerializeField]
         public ARRemotePlayer interactedPlayer;
 
         public TextMeshProUGUI posDisplay;
 
-        public Vector3 currentLocalPosition;
+        public NetworkVariable<Vector3> currentLocalPosition = new NetworkVariable<Vector3>(Vector3.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
         public void Start()
         {
             Init();
-            posDisplay = GameObject.FindGameObjectWithTag("broomTransform").GetComponent<TextMeshProUGUI>();
         }
 
         public void Init()
         {
             interactionPrompt = FindObjectOfType<InteractionPrompt>();
+            environmentManager = FindObjectOfType<NetworkEnvironmentManager>();
+            posDisplay = GameObject.FindGameObjectWithTag("broomTransform").GetComponent<TextMeshProUGUI>();
         }
 
         public override void TriggerEntered(Collider col)
@@ -56,6 +59,7 @@ namespace Sugar.Multiplayer.Interaction
                 interactionPrompt.promptButton.onClick.AddListener(() => InteractServerRpc(interactedPlayer.networkObject.OwnerClientId));
             }
         }
+
         public override void TriggerExited(Collider col)
         {
             if (objectData.isPickedUp.Value)
@@ -69,6 +73,7 @@ namespace Sugar.Multiplayer.Interaction
                 interactedPlayer = null;
             }
         }
+
         [ServerRpc(RequireOwnership = false)]
         public void InteractServerRpc(ulong clientID)
         {
@@ -102,16 +107,23 @@ namespace Sugar.Multiplayer.Interaction
             objectData.isPickedUp.Value = pickedUp;
         }
 
-
         private void Update()
         {
-            if(objectData.isPickedUp.Value == true)
-            {
-                transform.localPosition = interactedPlayer.transform.position;
-                currentLocalPosition = transform.localPosition;
-            }
+            MoveObjectServerRpc();
+        }
 
-            posDisplay.text = "Broom - " + transform.position.ToString();
+        [ServerRpc(RequireOwnership = false)]
+        public void MoveObjectServerRpc()
+        {
+            if (objectData.isPickedUp.Value == true)
+            {
+                transform.position = interactedPlayer.transform.position;
+                currentLocalPosition.Value = transform.position;
+            }
+            else
+            {
+                transform.localPosition = currentLocalPosition.Value;
+            }
         }
     }
 
