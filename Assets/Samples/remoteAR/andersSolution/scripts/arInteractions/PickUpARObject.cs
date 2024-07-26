@@ -12,7 +12,6 @@ namespace Sugar.Multiplayer.Interaction
 
     using TMPro;
 
-    [RequireComponent(typeof(ClientNetworkTransform))]
     public class PickUpARObject : BaseCollision
     {
         public ARObjectData objectData;
@@ -50,13 +49,17 @@ namespace Sugar.Multiplayer.Interaction
             //Debug.LogError("Col : " + col.transform.name);
             interactedPlayer = col.transform.parent.GetComponent<ARRemotePlayer>();
 
-            if (interactedPlayer.IsLocalPlayer)
+            if(interactedPlayer != null)
             {
-                interactionPrompt.promptButton.gameObject.SetActive(true);
+                if (interactedPlayer.IsLocalPlayer)
+                {
+                    interactionPrompt.promptButton.gameObject.SetActive(true);
 
-                Debug.LogError("Broom Interacted with  : " + interactedPlayer.networkObject.OwnerClientId);
-                interactionPrompt.promptButton.onClick.RemoveAllListeners();
-                interactionPrompt.promptButton.onClick.AddListener(() => InteractServerRpc(interactedPlayer.networkObject.OwnerClientId));
+                    Debug.LogError("Broom Interacted with  : " + interactedPlayer.networkObject.OwnerClientId);
+                    interactedPlayer.pickUpObject = this;
+                    interactionPrompt.promptButton.onClick.RemoveAllListeners();
+                    interactionPrompt.promptButton.onClick.AddListener(() => InteractServerRpc(interactedPlayer.networkObject.OwnerClientId));
+                }
             }
         }
 
@@ -66,11 +69,17 @@ namespace Sugar.Multiplayer.Interaction
             {
                 return;
             }
-
-            if (interactedPlayer.transform == col.transform.parent)
+            if(interactedPlayer != null)
             {
-                interactionPrompt.promptButton.gameObject.SetActive(false);
-                interactedPlayer = null;
+                if (interactedPlayer.transform == col.transform.parent)
+                {
+                    if(interactedPlayer.pickUpObject == this)
+                    {
+                        interactedPlayer.pickUpObject = null;
+                    }
+                    interactionPrompt.promptButton.gameObject.SetActive(false);
+                    interactedPlayer = null;
+                }
             }
         }
 
@@ -101,6 +110,12 @@ namespace Sugar.Multiplayer.Interaction
             }
         }
 
+        [ServerRpc(RequireOwnership = false)]
+        public void DropObjectServerRpc()
+        {
+            InteractClientRpc(false);
+        }
+
         [ClientRpc]
         public void InteractClientRpc(bool pickedUp)
         {
@@ -110,6 +125,8 @@ namespace Sugar.Multiplayer.Interaction
         private void Update()
         {
             MoveObjectServerRpc();
+            SetPositionCurrentLocalClientRpc();
+            posDisplay.text = "broom - " + transform.position;
         }
 
         [ServerRpc(RequireOwnership = false)]
@@ -118,12 +135,15 @@ namespace Sugar.Multiplayer.Interaction
             if (objectData.isPickedUp.Value == true)
             {
                 transform.position = interactedPlayer.transform.position;
-                currentLocalPosition.Value = transform.position;
+                currentLocalPosition.Value = interactedPlayer.transform.localPosition;
             }
-            else
-            {
-                transform.localPosition = currentLocalPosition.Value;
-            }
+        }
+
+        [ClientRpc]
+        public void SetPositionCurrentLocalClientRpc()
+        {
+            Debug.Log("Setting local position - " + currentLocalPosition.Value.ToString());
+            transform.localPosition = currentLocalPosition.Value;
         }
     }
 

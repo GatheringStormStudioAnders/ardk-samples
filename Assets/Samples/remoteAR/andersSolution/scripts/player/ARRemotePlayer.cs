@@ -25,6 +25,8 @@ namespace Sugar.Multiplayer
 
         public bool isEditor;
 
+        public Interaction.PickUpARObject pickUpObject;
+
         private void Start()
         {
             Init();
@@ -53,9 +55,9 @@ namespace Sugar.Multiplayer
         }
         public void Update()
         {
-            if(isEditor)
+            if (IsOwner)
             {
-                if (IsOwner)
+                if (isEditor)
                 {
                     Vector3 moveDir = Vector3.zero;
 
@@ -63,6 +65,18 @@ namespace Sugar.Multiplayer
                     moveDir.z = Input.GetAxisRaw("Vertical");
 
                     XROrigin.position += moveDir * speed * Time.deltaTime;
+                }
+
+                if (pickUpObject != null)
+                {
+                    if(pickUpObject.objectData.isPickedUp.Value == true)
+                    {
+                        if (Input.GetMouseButtonDown(0))
+                        {
+                            pickUpObject.DropObjectServerRpc();
+                            pickUpObject = null;
+                        }
+                    }
                 }
             }
 

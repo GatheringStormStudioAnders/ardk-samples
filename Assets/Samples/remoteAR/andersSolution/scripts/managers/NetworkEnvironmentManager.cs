@@ -31,9 +31,11 @@ namespace Sugar.Multiplayer
             GameObject broom = Instantiate(levelPrefabs[0], networkedParent);
             broom.GetComponent<NetworkObject>().Spawn(true);
             broom.transform.SetParent(networkedParent);
+            broom.transform.localPosition = levelPrefabs[0].transform.position;
             //broom.transform.localPosition = levelPrefabs[0].transform.position;
             //broom.transform.localRotation = levelPrefabs[0].transform.rotation;
-            broom.GetComponent<PickUpARObject>().currentLocalPosition.Value = levelPrefabs[0].transform.localPosition;
+            PickUpARObject pickUpARObject = broom.GetComponent<PickUpARObject>();
+            pickUpARObject.currentLocalPosition.Value = broom.transform.localPosition;
         }
 
         private void Update()
