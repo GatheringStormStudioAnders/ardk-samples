@@ -24,8 +24,6 @@ namespace Sugar.Multiplayer.Interaction
         [SerializeField]
         public ARRemotePlayer interactedPlayer;
 
-        public TextMeshProUGUI posDisplay;
-
         public NetworkVariable<Vector3> currentLocalPosition = new NetworkVariable<Vector3>(Vector3.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
         public void Start()
@@ -37,7 +35,6 @@ namespace Sugar.Multiplayer.Interaction
         {
             interactionPrompt = FindObjectOfType<InteractionPrompt>();
             environmentManager = FindObjectOfType<NetworkEnvironmentManager>();
-            posDisplay = GameObject.FindGameObjectWithTag("broomTransform").GetComponent<TextMeshProUGUI>();
         }
 
         public override void TriggerEntered(Collider col)
@@ -53,6 +50,8 @@ namespace Sugar.Multiplayer.Interaction
             {
                 if (interactedPlayer.IsLocalPlayer)
                 {
+                    interactionPrompt.promptAction.text = objectData.action;
+                    interactionPrompt.promptIcon.sprite = objectData.objectIcon;
                     interactionPrompt.promptButton.gameObject.SetActive(true);
 
                     Debug.LogError("Broom Interacted with  : " + interactedPlayer.networkObject.OwnerClientId);
@@ -126,7 +125,6 @@ namespace Sugar.Multiplayer.Interaction
         {
             MoveObjectServerRpc();
             SetPositionCurrentLocalClientRpc();
-            posDisplay.text = "broom - " + transform.position;
         }
 
         [ServerRpc(RequireOwnership = false)]

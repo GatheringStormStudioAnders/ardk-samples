@@ -11,6 +11,7 @@ Library: C:\Users\PC\Desktop\Sugar Creative\lightship3.5\ardk-samples\Temp\Burst
 --assembly-defines=Assembly-CSharp-firstpass;
 --assembly-defines=Assembly-CSharp;
 --assembly-defines=Unity.XR.Management;
+--assembly-defines=Unity.XR.MockHMD;
 --assembly-defines=Unity.VectorGraphics;
 --assembly-defines=Unity.AI.Navigation;
 --assembly-defines=Unity.Services.Core.Environments.Internal;
@@ -188,6 +189,7 @@ Library: C:\Users\PC\Desktop\Sugar Creative\lightship3.5\ardk-samples\Temp\Burst
 --assembly-defines=Assembly-CSharp-firstpass;
 --assembly-defines=Assembly-CSharp;
 --assembly-defines=Unity.XR.Management;
+--assembly-defines=Unity.XR.MockHMD;
 --assembly-defines=Unity.VectorGraphics;
 --assembly-defines=Unity.AI.Navigation;
 --assembly-defines=Unity.Services.Core.Environments.Internal;

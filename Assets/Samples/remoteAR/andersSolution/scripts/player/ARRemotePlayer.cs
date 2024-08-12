@@ -12,7 +12,7 @@ namespace Sugar.Multiplayer
         public float speed;
 
         public NetworkObject networkObject;
-        private NetworkEnvironmentManager environmentManager;
+        public NetworkEnvironmentManager environmentManager;
 
         public NetworkVariable<int> materialIndex = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 

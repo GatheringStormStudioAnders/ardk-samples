@@ -17,30 +17,35 @@ namespace Sugar.Multiplayer
         public List<ARRemotePlayer> players = new List<ARRemotePlayer>();
 
         public List<GameObject> levelPrefabs = new List<GameObject>();
-
-        public TextMeshProUGUI arenvironment;
         public void Start()
         {
-            NetworkManager.Singleton.OnServerStarted += SpawnBroom;
+            NetworkManager.Singleton.OnServerStarted += SpawnNetworkedObjectsList;
             //NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnectServerRpc;
-            arenvironment = GameObject.FindGameObjectWithTag("environmentTransform").GetComponent<TextMeshProUGUI>();
         }
 
-        public void SpawnBroom()
+        public void SpawnNetworkedObjectsList()
         {
-            GameObject broom = Instantiate(levelPrefabs[0], networkedParent);
-            broom.GetComponent<NetworkObject>().Spawn(true);
-            broom.transform.SetParent(networkedParent);
-            broom.transform.localPosition = levelPrefabs[0].transform.position;
-            //broom.transform.localPosition = levelPrefabs[0].transform.position;
-            //broom.transform.localRotation = levelPrefabs[0].transform.rotation;
-            PickUpARObject pickUpARObject = broom.GetComponent<PickUpARObject>();
-            pickUpARObject.currentLocalPosition.Value = broom.transform.localPosition;
-        }
 
-        private void Update()
-        {
-            arenvironment.text = "arEnvir = " + transform.position.ToString();
+            for(int i = 0; i < levelPrefabs.Count; i++)
+            {
+                GameObject networkedOject = Instantiate(levelPrefabs[i], networkedParent);
+                networkedOject.GetComponent<NetworkObject>().Spawn(true);
+                networkedOject.transform.SetParent(networkedParent);
+                networkedOject.transform.localPosition = levelPrefabs[i].transform.position;
+                PickUpARObject pickUpARObject = networkedOject.GetComponent<PickUpARObject>();
+                if(pickUpARObject != null)
+                {
+                    pickUpARObject.currentLocalPosition.Value = networkedOject.transform.localPosition;
+                }
+                else
+                {
+                    GroundItem groundItem = networkedOject.GetComponent<GroundItem>();
+                    if(groundItem != null)
+                    {
+                        groundItem.currentLocalPosition.Value = networkedOject.transform.localPosition;
+                    }
+                }
+            }
         }
     }
 }

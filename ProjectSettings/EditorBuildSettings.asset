@@ -62,6 +62,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Samples/arPortal/arPortal.unity
     guid: 03878e84a7d6bba46a68cc4eae99c7dc
+  - enabled: 0
+    path: Assets/Samples/sharedVPS/sharedVPS.unity
+    guid: b2e5534a2c5935a48a28c2d95facb557
   m_configObjects:
     Niantic.Lightship.AR.LightshipSettings: {fileID: 11400000, guid: 05b0489c7d3114fe3b5a5321c06a66dd, type: 2}
     Niantic.Lightship.AR.WPSSettings: {fileID: 11400000, guid: ee6baa83fec89444b99181fc1ccffc2a, type: 2}
@@ -71,3 +74,4 @@ EditorBuildSettings:
     com.unity.xr.arfoundation.simulation_settings: {fileID: 11400000, guid: 217d86e680eb34b97bb0bb2a6ec7bfac, type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 35d0a95eeda964a40a7be7be884e643f, type: 2}
     com.unity.xr.openxr.settings4: {fileID: 11400000, guid: 2751b5cd4300340c38aef3e21700408a, type: 2}
+    xr.sdk.mock-hmd.settings: {fileID: 11400000, guid: 14c98e65065b53b499844f14f92f2e80, type: 2}

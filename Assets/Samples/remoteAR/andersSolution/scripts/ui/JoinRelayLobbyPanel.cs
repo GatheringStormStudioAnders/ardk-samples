@@ -19,7 +19,8 @@ namespace Sugar.Multiplayer
 
         public void OnFinishedCodeInput()
         {
-            relayManager.JoinRelay(codeInput.text);
+            string lobbyCode = codeInput.text.ToUpper();
+            relayManager.JoinRelay(lobbyCode);
         }
 
         public void DisplayLobbyCode(string joinCode)
