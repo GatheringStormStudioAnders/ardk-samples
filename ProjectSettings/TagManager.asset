@@ -22,8 +22,8 @@ TagManager:
   - arPortalColliders
   - player
   - interaction
-  - 
-  - 
+  - collectables
+  - worldSpace3DUI
   - 
   - 
   - 

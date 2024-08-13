@@ -29,9 +29,14 @@ namespace Sugar.AR.Placement
 
         public bool isLocked;
 
+        public bool autoInit;
+
         private void Start()
         {
-            Init();
+            if (autoInit)
+            {
+                Init();
+            }
         }
 
         private void Init()
@@ -171,15 +176,18 @@ namespace Sugar.AR.Placement
                 plane.gameObject.SetActive(false);
             }
         }
-
         public void LockContentToLastPose()
         {
             arContent.position = placementIndicator.transform.position;
         }
-
         public void UnlockARPlacement()
         {
             isLocked = false;
+        }
+
+        public void BeginPlacement()
+        {
+            onBeginPlacement?.Invoke();
         }
     }
 
