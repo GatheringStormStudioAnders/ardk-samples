@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: powderHorn
   m_EditorClassIdentifier: 
   itemName: Powder Horn
-  itemIcon: {fileID: 0}
+  itemIcon: {fileID: 21300000, guid: 60317c2c8b6243841b0371b1fdd09292, type: 3}
   description: This is a Powder Horn.

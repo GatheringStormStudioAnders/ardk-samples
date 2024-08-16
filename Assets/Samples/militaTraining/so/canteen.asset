@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: canteen
   m_EditorClassIdentifier: 
   itemName: Canteen
-  itemIcon: {fileID: 0}
+  itemIcon: {fileID: 21300000, guid: a38cc2eca70368f4d9018bb5c0f0cd52, type: 3}
   description: This is a Canteen.

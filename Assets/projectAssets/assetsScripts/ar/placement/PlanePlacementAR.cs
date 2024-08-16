@@ -39,8 +39,9 @@ namespace Sugar.AR.Placement
             }
         }
 
-        private void Init()
+        public void Init()
         {
+            Debug.LogError("This is triggering?");
 #if UNITY_EDITOR
             enabled = false;
             placeButton.gameObject.SetActive(true);
@@ -48,6 +49,8 @@ namespace Sugar.AR.Placement
 #if UNITY_STANDALONE_WIN
             enabled = false;
             placeButton.gameObject.SetActive(true);
+            placementIndicator.gameObject.SetActive(true);
+            arContent.GetChild(0).gameObject.SetActive(placementIndicator.activeSelf);
 #endif
             planePlacement.aRRaycastManager = GetComponent<ARRaycastManager>();
             planePlacement.arCamera = FindObjectOfType<ARCameraManager>();
@@ -55,6 +58,9 @@ namespace Sugar.AR.Placement
 
         private void Update()
         {
+#if UNITY_EDITOR
+            return;
+#endif
             if (!isLocked)
             {
                 UpdateScaling();
@@ -184,10 +190,9 @@ namespace Sugar.AR.Placement
         {
             isLocked = false;
         }
-
-        public void BeginPlacement()
+        public void PlaceObject()
         {
-            onBeginPlacement?.Invoke();
+            onObjectPlacement?.Invoke();
         }
     }
 

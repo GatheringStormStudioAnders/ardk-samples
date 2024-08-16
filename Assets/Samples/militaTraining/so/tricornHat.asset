@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: tricornHat
   m_EditorClassIdentifier: 
   itemName: Tricorn Hat
-  itemIcon: {fileID: 0}
+  itemIcon: {fileID: 21300000, guid: cc1b8195c43751042b97381bf447c8dd, type: 3}
   description: This is a Tricorn Hat.

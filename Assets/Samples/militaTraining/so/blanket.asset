@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: blanket
   m_EditorClassIdentifier: 
   itemName: Blanket
-  itemIcon: {fileID: 0}
+  itemIcon: {fileID: 21300000, guid: 2dbbfab47d29fb24a85014e3ff4fc914, type: 3}
   description: This is a Blanket.

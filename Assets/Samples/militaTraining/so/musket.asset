@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: musket
   m_EditorClassIdentifier: 
   itemName: Musket
-  itemIcon: {fileID: 0}
+  itemIcon: {fileID: 21300000, guid: 0b260c3d4585c5f40bc6427c9695772e, type: 3}
   description: This is a Musket.
