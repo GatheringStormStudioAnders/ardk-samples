@@ -33,19 +33,32 @@ Shader /*ase_name*/ "Hidden/Universal/Lit" /*end*/
 	SubShader
 	{
 		/*ase_subshader_options:Name=Additional Options
+			Option:Lighting Model:PBR,Simple:PBR
+				PBR:SetPropertyOnSubShader:ChangeTagValue,UniversalMaterialType,Lit
+				PBR:SetShaderProperty:_SpecularHighlights,1
+				PBR:SetShaderProperty:_EnvironmentReflections,1
+				PBR:RemoveDefine:_ASE_LIGHTING_SIMPLE
+				Simple:SetOption:Workflow,0
+				Simple:SetDefine:_ASE_LIGHTING_SIMPLE
+				Simple:SetPropertyOnSubShader:ChangeTagValue,UniversalMaterialType,SimpleLit
+				Simple:SetShaderProperty:_SpecularHighlights,0
+				Simple:SetShaderProperty:_EnvironmentReflections,0
 			Option:Workflow:Specular,Metallic:Metallic
 				Specular:SetDefine:_SPECULAR_SETUP 1
 				Specular:ShowPort:Forward:Specular
 				Specular:HidePort:Forward:Metallic
-				Specular:SetDefine:Forward:pragma shader_feature_local_fragment _SPECULAR_SETUP
-				Specular:SetDefine:GBuffer:pragma shader_feature_local_fragment _SPECULAR_SETUP
-				Specular:SetDefine:Meta:pragma shader_feature_local_fragment _SPECULAR_SETUP
+				Specular:SetDefine:Forward:pragma shader_feature_local_fragment _SPECULARHIGHLIGHTS_OFF
+				Specular:SetDefine:GBuffer:pragma shader_feature_local_fragment _SPECULARHIGHLIGHTS_OFF
+				Specular:SetDefine:Forward:pragma shader_feature_local_fragment _ENVIRONMENTREFLECTIONS_OFF
+				Specular:SetDefine:GBuffer:pragma shader_feature_local_fragment _ENVIRONMENTREFLECTIONS_OFF
+				Metallic:SetOption:Lighting Model,0
 				Metallic:RemoveDefine:_SPECULAR_SETUP 1
 				Metallic:ShowPort:Forward:Metallic
 				Metallic:HidePort:Forward:Specular
-				Metallic:RemoveDefine:Forward:pragma shader_feature_local_fragment _SPECULAR_SETUP
-				Metallic:RemoveDefine:GBuffer:pragma shader_feature_local_fragment _SPECULAR_SETUP
-				Metallic:RemoveDefine:Meta:pragma shader_feature_local_fragment _SPECULAR_SETUP
+				Metallic:RemoveDefine:Forward:pragma shader_feature_local_fragment _SPECULARHIGHLIGHTS_OFF
+				Metallic:RemoveDefine:GBuffer:pragma shader_feature_local_fragment _SPECULARHIGHLIGHTS_OFF
+				Metallic:RemoveDefine:Forward:pragma shader_feature_local_fragment _ENVIRONMENTREFLECTIONS_OFF
+				Metallic:RemoveDefine:GBuffer:pragma shader_feature_local_fragment _ENVIRONMENTREFLECTIONS_OFF
 			Option:Surface:Opaque,Transparent:Opaque
 				Opaque:SetPropertyOnSubShader:RenderType,Opaque
 				Opaque:SetPropertyOnSubShader:RenderQueue,Geometry
@@ -75,8 +88,6 @@ Shader /*ase_name*/ "Hidden/Universal/Lit" /*end*/
 				Multiply:SetPropertyOnPass:Forward:BlendRGB,DstColor,Zero
 				Alpha,Premultiply,Additive:SetPropertyOnPass:Forward:BlendAlpha,One,OneMinusSrcAlpha
 				Multiply:SetPropertyOnPass:Forward:BlendAlpha,One,Zero
-				Premultiply:SetDefine:_ALPHAPREMULTIPLY_ON 1
-				Alpha,Additive,Multiply,disable:RemoveDefine:_ALPHAPREMULTIPLY_ON 1
 				disable:SetPropertyOnPass:Forward:BlendRGB,One,Zero
 				disable:SetPropertyOnPass:Forward:BlendAlpha,One,Zero
 			Option:Two Sided:On,Cull Back,Cull Front:Cull Back
@@ -165,6 +176,14 @@ Shader /*ase_name*/ "Hidden/Universal/Lit" /*end*/
 				true:ShowPort:Forward:Alpha Clip Threshold Shadow
 				false,disable:RemoveDefine:_ALPHATEST_SHADOW_ON 1
 				false,disable:HidePort:Forward:Alpha Clip Threshold Shadow
+			Option:Receive Shadows:false,true:true
+				true:SetDefine:Forward:pragma shader_feature_local _RECEIVE_SHADOWS_OFF
+				true:SetDefine:GBuffer:pragma shader_feature_local _RECEIVE_SHADOWS_OFF
+				false:RemoveDefine:Forward:pragma shader_feature_local _RECEIVE_SHADOWS_OFF
+				false:RemoveDefine:GBuffer:pragma shader_feature_local _RECEIVE_SHADOWS_OFF
+			Option:Receive SSAO:false,true:true
+				true:SetDefine:Forward:pragma multi_compile_fragment _ _SCREEN_SPACE_OCCLUSION
+				false:RemoveDefine:Forward:pragma multi_compile_fragment _ _SCREEN_SPACE_OCCLUSION
 			Option:GPU Instancing:false,true:true
 				true:SetDefine:Forward:pragma multi_compile_instancing
 				true:SetDefine:GBuffer:pragma multi_compile_instancing
@@ -458,8 +477,22 @@ Shader /*ase_name*/ "Hidden/Universal/Lit" /*end*/
 
 			HLSLPROGRAM
 
+			/*ase_srp_cond_begin:<140007*/
+            #pragma multi_compile _ DOTS_INSTANCING_ON
+			/*ase_srp_cond_end*/
+
 			#pragma vertex vert
 			#pragma fragment frag
+
+			/*ase_srp_cond_begin:>=140007*/
+            #if ASE_SRP_VERSION >=140007
+			#include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DOTS.hlsl"
+			#endif
+			/*ase_srp_cond_end*/
+
+			#if defined(_SPECULAR_SETUP) && defined(_ASE_LIGHTING_SIMPLE)
+				#define _SPECULAR_COLOR 1
+			#endif
 
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
@@ -718,9 +751,9 @@ Shader /*ase_name*/ "Hidden/Universal/Lit" /*end*/
 
 			HLSLPROGRAM
 
-			#pragma shader_feature_local _RECEIVE_SHADOWS_OFF
-			#pragma shader_feature_local_fragment _SPECULARHIGHLIGHTS_OFF
-			#pragma shader_feature_local_fragment _ENVIRONMENTREFLECTIONS_OFF
+			/*ase_srp_cond_begin:<140007*/
+            #pragma multi_compile _ DOTS_INSTANCING_ON
+			/*ase_srp_cond_end*/
 
 			#pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
 			#pragma multi_compile _ _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS
@@ -741,18 +774,13 @@ Shader /*ase_name*/ "Hidden/Universal/Lit" /*end*/
 			#pragma multi_compile_fragment _ _SHADOWS_SOFT _SHADOWS_SOFT_LOW _SHADOWS_SOFT_MEDIUM _SHADOWS_SOFT_HIGH
             /*ase_srp_cond_end*/
 
-			#pragma multi_compile_fragment _ _SCREEN_SPACE_OCCLUSION
 			#pragma multi_compile_fragment _ _DBUFFER_MRT1 _DBUFFER_MRT2 _DBUFFER_MRT3
 			#pragma multi_compile _ _LIGHT_LAYERS
 			#pragma multi_compile_fragment _ _LIGHT_COOKIES
 			#pragma multi_compile _ _FORWARD_PLUS
-		
-			/*ase_srp_cond_begin:<140007*/
-            #pragma multi_compile_fragment _ _WRITE_RENDERING_LAYERS
-			/*ase_srp_cond_end*/
 
 			/*ase_srp_cond_begin:<140007*/
-            #pragma multi_compile _ DOTS_INSTANCING_ON
+            #pragma multi_compile_fragment _ _WRITE_RENDERING_LAYERS
 			/*ase_srp_cond_end*/
 
 			#pragma multi_compile _ LIGHTMAP_SHADOW_MIXING
@@ -764,6 +792,10 @@ Shader /*ase_name*/ "Hidden/Universal/Lit" /*end*/
 
 			#pragma vertex vert
 			#pragma fragment frag
+
+			#if defined(_SPECULAR_SETUP) && defined(_ASE_LIGHTING_SIMPLE)
+				#define _SPECULAR_COLOR 1
+			#endif
 
 			#define SHADERPASS SHADERPASS_FORWARD
 
@@ -787,14 +819,14 @@ Shader /*ase_name*/ "Hidden/Universal/Lit" /*end*/
 			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/TextureStack.hlsl"
 
 			/*ase_unity_cond_begin:>=20220316*/
+            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
+            /*ase_unity_cond_end*/
+
+			/*ase_unity_cond_begin:>=20220316*/
             #if ASE_SRP_VERSION >=140009
 			#include_with_pragmas "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRenderingKeywords.hlsl"
 			#endif
 			/*ase_unity_cond_end*/
-
-			/*ase_unity_cond_begin:>=20220316*/
-            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
-            /*ase_unity_cond_end*/
 
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Shadows.hlsl"
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/ShaderGraphFunctions.hlsl"
@@ -1201,7 +1233,11 @@ Shader /*ase_name*/ "Hidden/Universal/Lit" /*end*/
 					ApplyDecalToSurfaceData(IN.positionCS, surfaceData, inputData);
 				#endif
 
-				half4 color = UniversalFragmentPBR( inputData, surfaceData);
+				#ifdef _ASE_LIGHTING_SIMPLE
+					half4 color = UniversalFragmentBlinnPhong( inputData, surfaceData);
+				#else
+					half4 color = UniversalFragmentPBR( inputData, surfaceData);
+				#endif
 
 				#ifdef ASE_TRANSMISSION
 				{
@@ -1347,14 +1383,18 @@ Shader /*ase_name*/ "Hidden/Universal/Lit" /*end*/
 
 			HLSLPROGRAM
 
-			#pragma multi_compile_vertex _ _CASTING_PUNCTUAL_LIGHT_SHADOW
-
 			/*ase_srp_cond_begin:<140007*/
             #pragma multi_compile _ DOTS_INSTANCING_ON
 			/*ase_srp_cond_end*/
 
+			#pragma multi_compile_vertex _ _CASTING_PUNCTUAL_LIGHT_SHADOW
+
 			#pragma vertex vert
 			#pragma fragment frag
+
+			#if defined(_SPECULAR_SETUP) && defined(_ASE_LIGHTING_SIMPLE)
+				#define _SPECULAR_COLOR 1
+			#endif
 
 			#define SHADERPASS SHADERPASS_SHADOWCASTER
 
@@ -1372,14 +1412,14 @@ Shader /*ase_name*/ "Hidden/Universal/Lit" /*end*/
 			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/TextureStack.hlsl"
 
 			/*ase_unity_cond_begin:>=20220316*/
+            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
+            /*ase_unity_cond_end*/
+
+			/*ase_unity_cond_begin:>=20220316*/
             #if ASE_SRP_VERSION >=140009
 			#include_with_pragmas "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRenderingKeywords.hlsl"
 			#endif
 			/*ase_unity_cond_end*/
-
-			/*ase_unity_cond_begin:>=20220316*/
-            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
-            /*ase_unity_cond_end*/
 
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/ShaderGraphFunctions.hlsl"
 			#include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/ShaderPass.hlsl"
@@ -1675,6 +1715,10 @@ Shader /*ase_name*/ "Hidden/Universal/Lit" /*end*/
 			#pragma vertex vert
 			#pragma fragment frag
 
+			#if defined(_SPECULAR_SETUP) && defined(_ASE_LIGHTING_SIMPLE)
+				#define _SPECULAR_COLOR 1
+			#endif
+
 			#define SHADERPASS SHADERPASS_DEPTHONLY
 
 			/*ase_srp_cond_begin:>=140007*/
@@ -1691,14 +1735,14 @@ Shader /*ase_name*/ "Hidden/Universal/Lit" /*end*/
 			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/TextureStack.hlsl"
 
 			/*ase_unity_cond_begin:>=20220316*/
+            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
+            /*ase_unity_cond_end*/
+
+			/*ase_unity_cond_begin:>=20220316*/
             #if ASE_SRP_VERSION >=140009
 			#include_with_pragmas "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRenderingKeywords.hlsl"
 			#endif
 			/*ase_unity_cond_end*/
-
-			/*ase_unity_cond_begin:>=20220316*/
-            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
-            /*ase_unity_cond_end*/
 
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/ShaderGraphFunctions.hlsl"
 			#include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/ShaderPass.hlsl"
@@ -1958,11 +2002,14 @@ Shader /*ase_name*/ "Hidden/Universal/Lit" /*end*/
 			Cull Off
 
 			HLSLPROGRAM
+			#pragma shader_feature EDITOR_VISUALIZATION
 
 			#pragma vertex vert
 			#pragma fragment frag
 
-			#pragma shader_feature EDITOR_VISUALIZATION
+			#if defined(_SPECULAR_SETUP) && defined(_ASE_LIGHTING_SIMPLE)
+				#define _SPECULAR_COLOR 1
+			#endif
 
 			#define SHADERPASS SHADERPASS_META
 
@@ -1974,14 +2021,14 @@ Shader /*ase_name*/ "Hidden/Universal/Lit" /*end*/
 			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/TextureStack.hlsl"
 
 			/*ase_unity_cond_begin:>=20220316*/
+            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
+            /*ase_unity_cond_end*/
+
+			/*ase_unity_cond_begin:>=20220316*/
             #if ASE_SRP_VERSION >=140009
 			#include_with_pragmas "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRenderingKeywords.hlsl"
 			#endif
 			/*ase_unity_cond_end*/
-
-			/*ase_unity_cond_begin:>=20220316*/
-            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
-            /*ase_unity_cond_end*/
 
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/ShaderGraphFunctions.hlsl"
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/MetaInput.hlsl"
@@ -2256,6 +2303,10 @@ Shader /*ase_name*/ "Hidden/Universal/Lit" /*end*/
 			#pragma vertex vert
 			#pragma fragment frag
 
+			#if defined(_SPECULAR_SETUP) && defined(_ASE_LIGHTING_SIMPLE)
+				#define _SPECULAR_COLOR 1
+			#endif
+
 			#define SHADERPASS SHADERPASS_2D
 
 			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Color.hlsl"
@@ -2266,14 +2317,14 @@ Shader /*ase_name*/ "Hidden/Universal/Lit" /*end*/
 			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/TextureStack.hlsl"
 
 			/*ase_unity_cond_begin:>=20220316*/
+            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
+            /*ase_unity_cond_end*/
+
+			/*ase_unity_cond_begin:>=20220316*/
             #if ASE_SRP_VERSION >=140009
 			#include_with_pragmas "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRenderingKeywords.hlsl"
 			#endif
 			/*ase_unity_cond_end*/
-
-			/*ase_unity_cond_begin:>=20220316*/
-            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
-            /*ase_unity_cond_end*/
 
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/ShaderGraphFunctions.hlsl"
 			#include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/ShaderPass.hlsl"
@@ -2509,16 +2560,20 @@ Shader /*ase_name*/ "Hidden/Universal/Lit" /*end*/
 
 			HLSLPROGRAM
 
-			#pragma vertex vert
-			#pragma fragment frag
+			/*ase_srp_cond_begin:<140007*/
+            #pragma multi_compile _ DOTS_INSTANCING_ON
+			/*ase_srp_cond_end*/
 
 			/*ase_srp_cond_begin:<140007*/
             #pragma multi_compile_fragment _ _WRITE_RENDERING_LAYERS
 			/*ase_srp_cond_end*/
 
-			/*ase_srp_cond_begin:<140007*/
-            #pragma multi_compile _ DOTS_INSTANCING_ON
-			/*ase_srp_cond_end*/
+			#pragma vertex vert
+			#pragma fragment frag
+
+			#if defined(_SPECULAR_SETUP) && defined(_ASE_LIGHTING_SIMPLE)
+				#define _SPECULAR_COLOR 1
+			#endif
 
 			#define SHADERPASS SHADERPASS_DEPTHNORMALSONLY
 			//#define SHADERPASS SHADERPASS_DEPTHNORMALS
@@ -2543,14 +2598,14 @@ Shader /*ase_name*/ "Hidden/Universal/Lit" /*end*/
 			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/TextureStack.hlsl"
 
 			/*ase_unity_cond_begin:>=20220316*/
+            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
+            /*ase_unity_cond_end*/
+
+			/*ase_unity_cond_begin:>=20220316*/
             #if ASE_SRP_VERSION >=140009
 			#include_with_pragmas "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRenderingKeywords.hlsl"
 			#endif
 			/*ase_unity_cond_end*/
-
-			/*ase_unity_cond_begin:>=20220316*/
-            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
-            /*ase_unity_cond_end*/
 
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/ShaderGraphFunctions.hlsl"
 			#include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/ShaderPass.hlsl"
@@ -2861,9 +2916,9 @@ Shader /*ase_name*/ "Hidden/Universal/Lit" /*end*/
 
 			HLSLPROGRAM
 
-			#pragma shader_feature_local _RECEIVE_SHADOWS_OFF
-			#pragma shader_feature_local_fragment _SPECULARHIGHLIGHTS_OFF
-			#pragma shader_feature_local_fragment _ENVIRONMENTREFLECTIONS_OFF
+			/*ase_srp_cond_begin:<140007*/
+            #pragma multi_compile _ DOTS_INSTANCING_ON
+			/*ase_srp_cond_end*/
 
 			#pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
 			#pragma multi_compile_fragment _ _REFLECTION_PROBE_BLENDING
@@ -2893,12 +2948,12 @@ Shader /*ase_name*/ "Hidden/Universal/Lit" /*end*/
 			#pragma multi_compile _ DYNAMICLIGHTMAP_ON
 			#pragma multi_compile_fragment _ DEBUG_DISPLAY
 
-			/*ase_srp_cond_begin:<140007*/
-            #pragma multi_compile _ DOTS_INSTANCING_ON
-			/*ase_srp_cond_end*/
-
 			#pragma vertex vert
 			#pragma fragment frag
+
+			#if defined(_SPECULAR_SETUP) && defined(_ASE_LIGHTING_SIMPLE)
+				#define _SPECULAR_COLOR 1
+			#endif
 
 			#define SHADERPASS SHADERPASS_GBUFFER
 
@@ -2922,14 +2977,14 @@ Shader /*ase_name*/ "Hidden/Universal/Lit" /*end*/
 			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/TextureStack.hlsl"
 
 			/*ase_unity_cond_begin:>=20220316*/
+            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
+            /*ase_unity_cond_end*/
+
+			/*ase_unity_cond_begin:>=20220316*/
             #if ASE_SRP_VERSION >=140009
 			#include_with_pragmas "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRenderingKeywords.hlsl"
 			#endif
 			/*ase_unity_cond_end*/
-
-			/*ase_unity_cond_begin:>=20220316*/
-            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
-            /*ase_unity_cond_end*/
 
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Shadows.hlsl"
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/ShaderGraphFunctions.hlsl"
@@ -3353,6 +3408,10 @@ Shader /*ase_name*/ "Hidden/Universal/Lit" /*end*/
 			#pragma vertex vert
 			#pragma fragment frag
 
+			#if defined(_SPECULAR_SETUP) && defined(_ASE_LIGHTING_SIMPLE)
+				#define _SPECULAR_COLOR 1
+			#endif
+
 			#define SCENESELECTIONPASS 1
 
 			#define ATTRIBUTES_NEED_NORMAL
@@ -3367,14 +3426,14 @@ Shader /*ase_name*/ "Hidden/Universal/Lit" /*end*/
 			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/TextureStack.hlsl"
 
 			/*ase_unity_cond_begin:>=20220316*/
+            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
+            /*ase_unity_cond_end*/
+
+			/*ase_unity_cond_begin:>=20220316*/
             #if ASE_SRP_VERSION >=140009
 			#include_with_pragmas "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRenderingKeywords.hlsl"
 			#endif
 			/*ase_unity_cond_end*/
-
-			/*ase_unity_cond_begin:>=20220316*/
-            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
-            /*ase_unity_cond_end*/
 
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/ShaderGraphFunctions.hlsl"
 
@@ -3610,6 +3669,10 @@ Shader /*ase_name*/ "Hidden/Universal/Lit" /*end*/
 			#pragma vertex vert
 			#pragma fragment frag
 
+			#if defined(_SPECULAR_SETUP) && defined(_ASE_LIGHTING_SIMPLE)
+				#define _SPECULAR_COLOR 1
+			#endif
+
 		    #define SCENEPICKINGPASS 1
 
 			#define ATTRIBUTES_NEED_NORMAL
@@ -3624,14 +3687,14 @@ Shader /*ase_name*/ "Hidden/Universal/Lit" /*end*/
 			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/TextureStack.hlsl"
 
 			/*ase_unity_cond_begin:>=20220316*/
+            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
+            /*ase_unity_cond_end*/
+
+			/*ase_unity_cond_begin:>=20220316*/
             #if ASE_SRP_VERSION >=140009
 			#include_with_pragmas "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRenderingKeywords.hlsl"
 			#endif
 			/*ase_unity_cond_end*/
-
-			/*ase_unity_cond_begin:>=20220316*/
-            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
-            /*ase_unity_cond_end*/
 
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/ShaderGraphFunctions.hlsl"
 
