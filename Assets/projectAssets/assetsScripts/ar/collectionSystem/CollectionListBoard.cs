@@ -8,14 +8,25 @@ namespace Sugar.CollectionSystem
     {
         public CollectionGUI ui;
         public GameObject boardNote;
+
+        public bool isOpen;
         public void TryAccessBoard(Transform target)
         {
-            CollectionListBoard board = target.GetComponent<CollectionListBoard>();
-            if(board != null)
+            if (!isOpen)
             {
-                boardNote.SetActive(false);
-                board.ui.OpenListUI();
+                CollectionListBoard board = target.GetComponent<CollectionListBoard>();
+                if (board != null)
+                {
+                    boardNote.SetActive(false);
+                    board.ui.OpenListUI();
+                    SetOpenState(true);
+                }
             }
+        }
+
+        public void SetOpenState(bool state)
+        {
+            isOpen = state;
         }
     }
 }

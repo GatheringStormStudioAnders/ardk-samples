@@ -39,7 +39,7 @@ namespace Sugar.UI
         public List<CollectableSlotUI> collectableUISlots = new List<CollectableSlotUI>();
         public void OpenListUI()
         {
-            collectionListPanel.transform.rotation = Quaternion.Euler(Vector3.zero);
+            collectionListPanel.transform.localRotation = Quaternion.Euler(Vector3.zero);
             for(int i = 0; i < collectableUISlots.Count; i++)
             {
                 for(int x = 0; x < collectionManager.requiredItems.Count; x++)
