@@ -8,6 +8,8 @@ namespace Sugar.OutlineSystem
 
     using Sugar.Collision;
 
+    using UnityEngine.UI;
+
     public class OutlineObject : MonoBehaviour
     {
         public Renderer meshRenderer;

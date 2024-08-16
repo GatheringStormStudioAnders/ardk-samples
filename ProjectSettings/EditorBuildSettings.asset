@@ -54,7 +54,7 @@ EditorBuildSettings:
     path: Assets/Samples/Semantics/Scenes/vpsSemantic.unity
     guid: ee49cbeb2450f61499a7e2fd01a73e3c
   - enabled: 0
-    path: Assets/projectAssets/assetsScenes/cardiffVPSTest/cardiffGateVPS.unity
+    path: Assets/Samples/cardiffVPSTest/cardiffGateVPS.unity
     guid: 6e5167f609294564ba52d2f1b718ac45
   - enabled: 0
     path: Assets/Samples/LightEstimation/LightEstimation.unity
@@ -66,7 +66,7 @@ EditorBuildSettings:
     path: Assets/Samples/sharedVPS/sharedVPS.unity
     guid: b2e5534a2c5935a48a28c2d95facb557
   - enabled: 1
-    path: Assets/Samples/militaTraining/militaTraining.unity
+    path: Assets/projectAssets/assetsScenes/militaTraining/militaTraining.unity
     guid: da36ea8a1c42f4e48b64a811e11a534b
   m_configObjects:
     Niantic.Lightship.AR.LightshipSettings: {fileID: 11400000, guid: 05b0489c7d3114fe3b5a5321c06a66dd, type: 2}
