@@ -1,32 +1,22 @@
 // Made with Amplify Shader Editor v1.9.6.2
 // Available at the Unity Asset Store - http://u3d.as/y3X 
-Shader "Object_SpawnIn"
+Shader "EmissionOnly_SpawnInOLD"
 {
 	Properties
 	{
-		[HideInInspector] _EmissionColor("Emission Color", Color) = (1,1,1,1)
 		[HideInInspector] _AlphaCutoff("Alpha Cutoff ", Range(0, 1)) = 0.5
-		_Albedo1("Albedo", 2D) = "white" {}
-		_Tint("Tint", Color) = (1,1,1,0)
+		[HideInInspector] _EmissionColor("Emission Color", Color) = (1,1,1,1)
 		[HDR]_Emission("Emission", Color) = (1,1,1,0)
-		[IntRange]_EmissionOnly("Emission Only", Range( 0 , 1)) = 0
-		_Normal("Normal", 2D) = "bump" {}
-		[IntRange]_FlipNormal("Flip Normal", Range( 0 , 1)) = 0
-		_Mask("Mask", 2D) = "white" {}
-		[IntRange]_FlipSmooth("Flip Smooth", Range( 0 , 1)) = 1
-		_SmoothTweak("Smooth Tweak", Float) = 1
-		_Metallic("Metallic", 2D) = "white" {}
-		_AO("AO", 2D) = "white" {}
-		[Header(Fade Controlls)]_FadeShift("Fade Shift", Range( 0 , 1)) = 0
-		_FadeBlur("Fade Blur", Range( 0.01 , 5)) = 0.6433212
-		_FadeDirection("Fade Direction", Vector) = (0,-1,0,0)
-		[IntRange]_InvertFade("Invert Fade", Range( 0 , 1)) = 1
-		_Overlap("Overlap", Float) = 0
+		[Header(Fade Controlls)]_FadeShift("Fade Shift", Range( 0 , 1)) = 0.1812099
+		_FadeBlur("Fade Blur", Range( 0.01 , 5)) = 0.01
+		_FadeDirection("Fade Direction", Vector) = (0,1,0,0)
+		[IntRange]_InvertFade("Invert Fade", Range( 0 , 1)) = 0
 		_ObjectHeightAdjust("Object Height Adjust", Float) = 0
+		_NoiseScale("Noise Scale", Float) = 50
+		_NoiseTurbulence("Noise Turbulence", Float) = 3
+		_TurbulenceTweak("Turbulence Tweak", Float) = 0
+		_Overlap("Overlap", Float) = 0
 		_AlphaClip("AlphaClip", Range( 0.1 , 0.5)) = 0.1
-		_EmissionOffset("Emission Offset", Range( -1 , 1)) = 0.3172873
-		_NoiseScales("Noise Scales", Vector) = (50,5,0,0)
-		[HideInInspector] _texcoord( "", 2D ) = "white" {}
 
 
 		//_TransmissionShadow( "Transmission Shadow", Range( 0, 1 ) ) = 0.5
@@ -190,7 +180,7 @@ Shader "Object_SpawnIn"
 			Tags { "LightMode"="UniversalForward" }
 
 			Blend One Zero, One Zero
-			ZWrite On
+			ZWrite Off
 			ZTest LEqual
 			Offset 0 , 0
 			ColorMask RGBA
@@ -211,7 +201,6 @@ Shader "Object_SpawnIn"
 			#define ASE_FOG 1
 			#define _EMISSION
 			#define _ALPHATEST_ON 1
-			#define _NORMALMAP 1
 			#define ASE_SRP_VERSION 140010
 
 
@@ -343,25 +332,16 @@ Shader "Object_SpawnIn"
 			};
 
 			CBUFFER_START(UnityPerMaterial)
-			float4 _Tint;
-			float4 _Albedo1_ST;
-			float4 _Normal_ST;
-			float4 _AO_ST;
 			float4 _Emission;
-			float4 _Metallic_ST;
-			float4 _Mask_ST;
 			float3 _FadeDirection;
-			float2 _NoiseScales;
-			float _SmoothTweak;
-			float _FlipSmooth;
-			float _InvertFade;
+			float _FadeShift;
 			float _ObjectHeightAdjust;
 			float _FadeBlur;
-			float _EmissionOnly;
 			float _Overlap;
-			float _FadeShift;
-			float _FlipNormal;
-			float _EmissionOffset;
+			float _NoiseScale;
+			float _NoiseTurbulence;
+			float _TurbulenceTweak;
+			float _InvertFade;
 			float _AlphaClip;
 			#ifdef ASE_TRANSMISSION
 				float _TransmissionShadow;
@@ -393,12 +373,7 @@ Shader "Object_SpawnIn"
 				int _PassValue;
 			#endif
 
-			sampler2D _Albedo1;
-			sampler2D _Normal;
-			sampler2D _Mask;
-			sampler2D _Metallic;
-			sampler2D _AO;
-
+			
 
 			float3 mod2D289( float3 x ) { return x - floor( x * ( 1.0 / 289.0 ) ) * 289.0; }
 			float2 mod2D289( float2 x ) { return x - floor( x * ( 1.0 / 289.0 ) ) * 289.0; }
@@ -436,11 +411,11 @@ Shader "Object_SpawnIn"
 				UNITY_TRANSFER_INSTANCE_ID(v, o);
 				UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
 
-				o.ase_texcoord8.xy = v.texcoord.xy;
-				o.ase_texcoord9 = v.positionOS;
+				o.ase_texcoord8 = v.positionOS;
+				o.ase_texcoord9.xy = v.texcoord.xy;
 				
 				//setting value to unused interpolator channels and avoid initialization warnings
-				o.ase_texcoord8.zw = 0;
+				o.ase_texcoord9.zw = 0;
 
 				#ifdef ASE_ABSOLUTE_VERTEX_POS
 					float3 defaultVertexValue = v.positionOS.xyz;
@@ -636,54 +611,33 @@ Shader "Object_SpawnIn"
 
 				WorldViewDirection = SafeNormalize( WorldViewDirection );
 
-				float2 uv_Albedo1 = IN.ase_texcoord8.xy * _Albedo1_ST.xy + _Albedo1_ST.zw;
-				float4 Albedo56 = tex2D( _Albedo1, uv_Albedo1 );
-				
-				float2 uv_Normal = IN.ase_texcoord8.xy * _Normal_ST.xy + _Normal_ST.zw;
-				float3 tex2DNode51 = UnpackNormalScale( tex2D( _Normal, uv_Normal ), 1.0f );
-				float3 lerpResult38 = lerp( tex2DNode51 , ( ( float3( 0, 1, 0 ) * -2 + 1 ) * tex2DNode51 ) , _FlipNormal);
-				float3 Normal40 = lerpResult38;
-				
-				float2 texCoord121 = IN.ase_texcoord8.xy * float2( 2,1 ) + float2( 0,0 );
-				float simplePerlin2D142 = snoise( texCoord121*_NoiseScales.x );
-				simplePerlin2D142 = simplePerlin2D142*0.5 + 0.5;
-				float simplePerlin2D124 = snoise( texCoord121*_NoiseScales.y );
-				simplePerlin2D124 = simplePerlin2D124*0.5 + 0.5;
-				float temp_output_144_0 = ( simplePerlin2D142 * simplePerlin2D124 );
-				float dotResult118 = dot( ( _FadeDirection * IN.ase_texcoord9.xyz ) , float3( 1,1,1 ) );
-				float temp_output_115_0 = ( -1.0 + _Overlap );
-				float temp_output_116_0 = ( _ObjectHeightAdjust + 2.0 + _Overlap );
-				float temp_output_125_0 = step( temp_output_144_0 , ( ( dotResult118 + (temp_output_115_0 + (_FadeShift - 0.0) * (temp_output_116_0 - temp_output_115_0) / (1.0 - 0.0)) ) / _FadeBlur ) );
-				float lerpResult136 = lerp( temp_output_125_0 , ( 1.0 - step( temp_output_144_0 , ( ( dotResult118 + (( temp_output_115_0 + _EmissionOffset ) + (_FadeShift - 0.0) * (temp_output_116_0 - ( temp_output_115_0 + _EmissionOffset )) / (1.0 - 0.0)) ) / _FadeBlur ) ) ) , _InvertFade);
-				float emissionAlpha138 = lerpResult136;
-				float4 lerpResult22 = lerp( _Emission , float4( 0,0,0,0 ) , emissionAlpha138);
-				
-				float2 uv_Mask = IN.ase_texcoord8.xy * _Mask_ST.xy + _Mask_ST.zw;
-				float4 tex2DNode53 = tex2D( _Mask, uv_Mask );
-				float2 uv_Metallic = IN.ase_texcoord8.xy * _Metallic_ST.xy + _Metallic_ST.zw;
-				float4 tex2DNode54 = tex2D( _Metallic, uv_Metallic );
-				float metal59 = ( tex2DNode53.b * tex2DNode54.r );
-				
-				float lerpResult47 = lerp( tex2DNode53.g , ( 1.0 - tex2DNode53.g ) , _FlipSmooth);
-				float Smooth58 = saturate( ( tex2DNode54.r * lerpResult47 * _SmoothTweak ) );
-				
-				float2 uv_AO = IN.ase_texcoord8.xy * _AO_ST.xy + _AO_ST.zw;
-				float ao57 = ( tex2DNode53.r * tex2D( _AO, uv_AO ).r );
-				
-				float lerpResult128 = lerp( temp_output_125_0 , ( 1.0 - temp_output_125_0 ) , _InvertFade);
-				float alpha129 = lerpResult128;
-				float4 temp_cast_2 = (alpha129).xxxx;
-				float4 lerpResult107 = lerp( temp_cast_2 , ( lerpResult22 * alpha129 ) , _EmissionOnly);
+				float dotResult69 = dot( ( _FadeDirection * IN.ase_texcoord8.xyz ) , float3( 1,1,1 ) );
+				float temp_output_65_0 = ( dotResult69 + (-1.0 + (_FadeShift - 0.0) * (( _ObjectHeightAdjust + 2.0 ) - -1.0) / (1.0 - 0.0)) );
+				float temp_output_75_0 = ( temp_output_65_0 / _FadeBlur );
+				float2 _OverlapRefactor = float2(0,1);
+				float2 texCoord6 = IN.ase_texcoord9.xy * float2( 2,1 ) + float2( 0,0 );
+				float simplePerlin2D7 = snoise( texCoord6*_NoiseScale );
+				simplePerlin2D7 = simplePerlin2D7*0.5 + 0.5;
+				float smoothstepResult110 = smoothstep( ( _OverlapRefactor.x + _Overlap ) , ( _OverlapRefactor.y + _Overlap ) , simplePerlin2D7);
+				float simplePerlin2D93 = snoise( texCoord6*_NoiseTurbulence );
+				simplePerlin2D93 = simplePerlin2D93*0.5 + 0.5;
+				float noiseTurb99 = ( simplePerlin2D93 * ( temp_output_75_0 + _TurbulenceTweak ) );
+				float temp_output_88_0 = ( temp_output_75_0 * smoothstepResult110 * saturate( ( noiseTurb99 + temp_output_65_0 ) ) );
+				float smoothstepResult117 = smoothstep( 0.0 , 0.17 , temp_output_88_0);
+				float temp_output_90_0 = saturate( smoothstepResult117 );
+				float lerpResult104 = lerp( temp_output_90_0 , 0.0 , _InvertFade);
+				float edgeBlur86 = lerpResult104;
+				float4 lerpResult22 = lerp( _Emission , float4( 0,0,0,0 ) , edgeBlur86);
 				
 
-				float3 BaseColor = ( _Tint * Albedo56 ).rgb;
-				float3 Normal = Normal40;
+				float3 BaseColor = lerpResult22.rgb;
+				float3 Normal = float3(0, 0, 1);
 				float3 Emission = lerpResult22.rgb;
 				float3 Specular = 0.5;
-				float Metallic = metal59;
-				float Smoothness = Smooth58;
-				float Occlusion = ao57;
-				float Alpha = lerpResult107.r;
+				float Metallic = 0;
+				float Smoothness = 0.5;
+				float Occlusion = 1;
+				float Alpha = saturate( ( lerpResult22 * edgeBlur86 ) ).r;
 				float AlphaClipThreshold = _AlphaClip;
 				float AlphaClipThresholdShadow = 0.5;
 				float3 BakedGI = 0;
@@ -941,7 +895,6 @@ Shader "Object_SpawnIn"
 			#define ASE_FOG 1
 			#define _EMISSION
 			#define _ALPHATEST_ON 1
-			#define _NORMALMAP 1
 			#define ASE_SRP_VERSION 140010
 
 
@@ -1023,25 +976,16 @@ Shader "Object_SpawnIn"
 			};
 
 			CBUFFER_START(UnityPerMaterial)
-			float4 _Tint;
-			float4 _Albedo1_ST;
-			float4 _Normal_ST;
-			float4 _AO_ST;
 			float4 _Emission;
-			float4 _Metallic_ST;
-			float4 _Mask_ST;
 			float3 _FadeDirection;
-			float2 _NoiseScales;
-			float _SmoothTweak;
-			float _FlipSmooth;
-			float _InvertFade;
+			float _FadeShift;
 			float _ObjectHeightAdjust;
 			float _FadeBlur;
-			float _EmissionOnly;
 			float _Overlap;
-			float _FadeShift;
-			float _FlipNormal;
-			float _EmissionOffset;
+			float _NoiseScale;
+			float _NoiseTurbulence;
+			float _TurbulenceTweak;
+			float _InvertFade;
 			float _AlphaClip;
 			#ifdef ASE_TRANSMISSION
 				float _TransmissionShadow;
@@ -1114,11 +1058,11 @@ Shader "Object_SpawnIn"
 				UNITY_TRANSFER_INSTANCE_ID(v, o);
 				UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO( o );
 
-				o.ase_texcoord3.xy = v.ase_texcoord.xy;
-				o.ase_texcoord4 = v.positionOS;
+				o.ase_texcoord3 = v.positionOS;
+				o.ase_texcoord4.xy = v.ase_texcoord.xy;
 				
 				//setting value to unused interpolator channels and avoid initialization warnings
-				o.ase_texcoord3.zw = 0;
+				o.ase_texcoord4.zw = 0;
 
 				#ifdef ASE_ABSOLUTE_VERTEX_POS
 					float3 defaultVertexValue = v.positionOS.xyz;
@@ -1274,26 +1218,26 @@ Shader "Object_SpawnIn"
 					#endif
 				#endif
 
-				float2 texCoord121 = IN.ase_texcoord3.xy * float2( 2,1 ) + float2( 0,0 );
-				float simplePerlin2D142 = snoise( texCoord121*_NoiseScales.x );
-				simplePerlin2D142 = simplePerlin2D142*0.5 + 0.5;
-				float simplePerlin2D124 = snoise( texCoord121*_NoiseScales.y );
-				simplePerlin2D124 = simplePerlin2D124*0.5 + 0.5;
-				float temp_output_144_0 = ( simplePerlin2D142 * simplePerlin2D124 );
-				float dotResult118 = dot( ( _FadeDirection * IN.ase_texcoord4.xyz ) , float3( 1,1,1 ) );
-				float temp_output_115_0 = ( -1.0 + _Overlap );
-				float temp_output_116_0 = ( _ObjectHeightAdjust + 2.0 + _Overlap );
-				float temp_output_125_0 = step( temp_output_144_0 , ( ( dotResult118 + (temp_output_115_0 + (_FadeShift - 0.0) * (temp_output_116_0 - temp_output_115_0) / (1.0 - 0.0)) ) / _FadeBlur ) );
-				float lerpResult128 = lerp( temp_output_125_0 , ( 1.0 - temp_output_125_0 ) , _InvertFade);
-				float alpha129 = lerpResult128;
-				float4 temp_cast_0 = (alpha129).xxxx;
-				float lerpResult136 = lerp( temp_output_125_0 , ( 1.0 - step( temp_output_144_0 , ( ( dotResult118 + (( temp_output_115_0 + _EmissionOffset ) + (_FadeShift - 0.0) * (temp_output_116_0 - ( temp_output_115_0 + _EmissionOffset )) / (1.0 - 0.0)) ) / _FadeBlur ) ) ) , _InvertFade);
-				float emissionAlpha138 = lerpResult136;
-				float4 lerpResult22 = lerp( _Emission , float4( 0,0,0,0 ) , emissionAlpha138);
-				float4 lerpResult107 = lerp( temp_cast_0 , ( lerpResult22 * alpha129 ) , _EmissionOnly);
+				float dotResult69 = dot( ( _FadeDirection * IN.ase_texcoord3.xyz ) , float3( 1,1,1 ) );
+				float temp_output_65_0 = ( dotResult69 + (-1.0 + (_FadeShift - 0.0) * (( _ObjectHeightAdjust + 2.0 ) - -1.0) / (1.0 - 0.0)) );
+				float temp_output_75_0 = ( temp_output_65_0 / _FadeBlur );
+				float2 _OverlapRefactor = float2(0,1);
+				float2 texCoord6 = IN.ase_texcoord4.xy * float2( 2,1 ) + float2( 0,0 );
+				float simplePerlin2D7 = snoise( texCoord6*_NoiseScale );
+				simplePerlin2D7 = simplePerlin2D7*0.5 + 0.5;
+				float smoothstepResult110 = smoothstep( ( _OverlapRefactor.x + _Overlap ) , ( _OverlapRefactor.y + _Overlap ) , simplePerlin2D7);
+				float simplePerlin2D93 = snoise( texCoord6*_NoiseTurbulence );
+				simplePerlin2D93 = simplePerlin2D93*0.5 + 0.5;
+				float noiseTurb99 = ( simplePerlin2D93 * ( temp_output_75_0 + _TurbulenceTweak ) );
+				float temp_output_88_0 = ( temp_output_75_0 * smoothstepResult110 * saturate( ( noiseTurb99 + temp_output_65_0 ) ) );
+				float smoothstepResult117 = smoothstep( 0.0 , 0.17 , temp_output_88_0);
+				float temp_output_90_0 = saturate( smoothstepResult117 );
+				float lerpResult104 = lerp( temp_output_90_0 , 0.0 , _InvertFade);
+				float edgeBlur86 = lerpResult104;
+				float4 lerpResult22 = lerp( _Emission , float4( 0,0,0,0 ) , edgeBlur86);
 				
 
-				float Alpha = lerpResult107.r;
+				float Alpha = saturate( ( lerpResult22 * edgeBlur86 ) ).r;
 				float AlphaClipThreshold = _AlphaClip;
 				float AlphaClipThresholdShadow = 0.5;
 
@@ -1343,7 +1287,6 @@ Shader "Object_SpawnIn"
 			#define ASE_FOG 1
 			#define _EMISSION
 			#define _ALPHATEST_ON 1
-			#define _NORMALMAP 1
 			#define ASE_SRP_VERSION 140010
 
 
@@ -1423,25 +1366,16 @@ Shader "Object_SpawnIn"
 			};
 
 			CBUFFER_START(UnityPerMaterial)
-			float4 _Tint;
-			float4 _Albedo1_ST;
-			float4 _Normal_ST;
-			float4 _AO_ST;
 			float4 _Emission;
-			float4 _Metallic_ST;
-			float4 _Mask_ST;
 			float3 _FadeDirection;
-			float2 _NoiseScales;
-			float _SmoothTweak;
-			float _FlipSmooth;
-			float _InvertFade;
+			float _FadeShift;
 			float _ObjectHeightAdjust;
 			float _FadeBlur;
-			float _EmissionOnly;
 			float _Overlap;
-			float _FadeShift;
-			float _FlipNormal;
-			float _EmissionOffset;
+			float _NoiseScale;
+			float _NoiseTurbulence;
+			float _TurbulenceTweak;
+			float _InvertFade;
 			float _AlphaClip;
 			#ifdef ASE_TRANSMISSION
 				float _TransmissionShadow;
@@ -1511,11 +1445,11 @@ Shader "Object_SpawnIn"
 				UNITY_TRANSFER_INSTANCE_ID(v, o);
 				UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
 
-				o.ase_texcoord3.xy = v.ase_texcoord.xy;
-				o.ase_texcoord4 = v.positionOS;
+				o.ase_texcoord3 = v.positionOS;
+				o.ase_texcoord4.xy = v.ase_texcoord.xy;
 				
 				//setting value to unused interpolator channels and avoid initialization warnings
-				o.ase_texcoord3.zw = 0;
+				o.ase_texcoord4.zw = 0;
 
 				#ifdef ASE_ABSOLUTE_VERTEX_POS
 					float3 defaultVertexValue = v.positionOS.xyz;
@@ -1653,26 +1587,26 @@ Shader "Object_SpawnIn"
 					#endif
 				#endif
 
-				float2 texCoord121 = IN.ase_texcoord3.xy * float2( 2,1 ) + float2( 0,0 );
-				float simplePerlin2D142 = snoise( texCoord121*_NoiseScales.x );
-				simplePerlin2D142 = simplePerlin2D142*0.5 + 0.5;
-				float simplePerlin2D124 = snoise( texCoord121*_NoiseScales.y );
-				simplePerlin2D124 = simplePerlin2D124*0.5 + 0.5;
-				float temp_output_144_0 = ( simplePerlin2D142 * simplePerlin2D124 );
-				float dotResult118 = dot( ( _FadeDirection * IN.ase_texcoord4.xyz ) , float3( 1,1,1 ) );
-				float temp_output_115_0 = ( -1.0 + _Overlap );
-				float temp_output_116_0 = ( _ObjectHeightAdjust + 2.0 + _Overlap );
-				float temp_output_125_0 = step( temp_output_144_0 , ( ( dotResult118 + (temp_output_115_0 + (_FadeShift - 0.0) * (temp_output_116_0 - temp_output_115_0) / (1.0 - 0.0)) ) / _FadeBlur ) );
-				float lerpResult128 = lerp( temp_output_125_0 , ( 1.0 - temp_output_125_0 ) , _InvertFade);
-				float alpha129 = lerpResult128;
-				float4 temp_cast_0 = (alpha129).xxxx;
-				float lerpResult136 = lerp( temp_output_125_0 , ( 1.0 - step( temp_output_144_0 , ( ( dotResult118 + (( temp_output_115_0 + _EmissionOffset ) + (_FadeShift - 0.0) * (temp_output_116_0 - ( temp_output_115_0 + _EmissionOffset )) / (1.0 - 0.0)) ) / _FadeBlur ) ) ) , _InvertFade);
-				float emissionAlpha138 = lerpResult136;
-				float4 lerpResult22 = lerp( _Emission , float4( 0,0,0,0 ) , emissionAlpha138);
-				float4 lerpResult107 = lerp( temp_cast_0 , ( lerpResult22 * alpha129 ) , _EmissionOnly);
+				float dotResult69 = dot( ( _FadeDirection * IN.ase_texcoord3.xyz ) , float3( 1,1,1 ) );
+				float temp_output_65_0 = ( dotResult69 + (-1.0 + (_FadeShift - 0.0) * (( _ObjectHeightAdjust + 2.0 ) - -1.0) / (1.0 - 0.0)) );
+				float temp_output_75_0 = ( temp_output_65_0 / _FadeBlur );
+				float2 _OverlapRefactor = float2(0,1);
+				float2 texCoord6 = IN.ase_texcoord4.xy * float2( 2,1 ) + float2( 0,0 );
+				float simplePerlin2D7 = snoise( texCoord6*_NoiseScale );
+				simplePerlin2D7 = simplePerlin2D7*0.5 + 0.5;
+				float smoothstepResult110 = smoothstep( ( _OverlapRefactor.x + _Overlap ) , ( _OverlapRefactor.y + _Overlap ) , simplePerlin2D7);
+				float simplePerlin2D93 = snoise( texCoord6*_NoiseTurbulence );
+				simplePerlin2D93 = simplePerlin2D93*0.5 + 0.5;
+				float noiseTurb99 = ( simplePerlin2D93 * ( temp_output_75_0 + _TurbulenceTweak ) );
+				float temp_output_88_0 = ( temp_output_75_0 * smoothstepResult110 * saturate( ( noiseTurb99 + temp_output_65_0 ) ) );
+				float smoothstepResult117 = smoothstep( 0.0 , 0.17 , temp_output_88_0);
+				float temp_output_90_0 = saturate( smoothstepResult117 );
+				float lerpResult104 = lerp( temp_output_90_0 , 0.0 , _InvertFade);
+				float edgeBlur86 = lerpResult104;
+				float4 lerpResult22 = lerp( _Emission , float4( 0,0,0,0 ) , edgeBlur86);
 				
 
-				float Alpha = lerpResult107.r;
+				float Alpha = saturate( ( lerpResult22 * edgeBlur86 ) ).r;
 				float AlphaClipThreshold = _AlphaClip;
 
 				#ifdef ASE_DEPTH_WRITE_ON
@@ -1710,7 +1644,6 @@ Shader "Object_SpawnIn"
 			#define ASE_FOG 1
 			#define _EMISSION
 			#define _ALPHATEST_ON 1
-			#define _NORMALMAP 1
 			#define ASE_SRP_VERSION 140010
 
 			#pragma shader_feature EDITOR_VISUALIZATION
@@ -1778,25 +1711,16 @@ Shader "Object_SpawnIn"
 			};
 
 			CBUFFER_START(UnityPerMaterial)
-			float4 _Tint;
-			float4 _Albedo1_ST;
-			float4 _Normal_ST;
-			float4 _AO_ST;
 			float4 _Emission;
-			float4 _Metallic_ST;
-			float4 _Mask_ST;
 			float3 _FadeDirection;
-			float2 _NoiseScales;
-			float _SmoothTweak;
-			float _FlipSmooth;
-			float _InvertFade;
+			float _FadeShift;
 			float _ObjectHeightAdjust;
 			float _FadeBlur;
-			float _EmissionOnly;
 			float _Overlap;
-			float _FadeShift;
-			float _FlipNormal;
-			float _EmissionOffset;
+			float _NoiseScale;
+			float _NoiseTurbulence;
+			float _TurbulenceTweak;
+			float _InvertFade;
 			float _AlphaClip;
 			#ifdef ASE_TRANSMISSION
 				float _TransmissionShadow;
@@ -1828,8 +1752,7 @@ Shader "Object_SpawnIn"
 				int _PassValue;
 			#endif
 
-			sampler2D _Albedo1;
-
+			
 
 			float3 mod2D289( float3 x ) { return x - floor( x * ( 1.0 / 289.0 ) ) * 289.0; }
 			float2 mod2D289( float2 x ) { return x - floor( x * ( 1.0 / 289.0 ) ) * 289.0; }
@@ -1867,11 +1790,11 @@ Shader "Object_SpawnIn"
 				UNITY_TRANSFER_INSTANCE_ID(v, o);
 				UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
 
-				o.ase_texcoord4.xy = v.texcoord0.xy;
-				o.ase_texcoord5 = v.positionOS;
+				o.ase_texcoord4 = v.positionOS;
+				o.ase_texcoord5.xy = v.texcoord0.xy;
 				
 				//setting value to unused interpolator channels and avoid initialization warnings
-				o.ase_texcoord4.zw = 0;
+				o.ase_texcoord5.zw = 0;
 
 				#ifdef ASE_ABSOLUTE_VERTEX_POS
 					float3 defaultVertexValue = v.positionOS.xyz;
@@ -2022,32 +1945,28 @@ Shader "Object_SpawnIn"
 					#endif
 				#endif
 
-				float2 uv_Albedo1 = IN.ase_texcoord4.xy * _Albedo1_ST.xy + _Albedo1_ST.zw;
-				float4 Albedo56 = tex2D( _Albedo1, uv_Albedo1 );
-				
-				float2 texCoord121 = IN.ase_texcoord4.xy * float2( 2,1 ) + float2( 0,0 );
-				float simplePerlin2D142 = snoise( texCoord121*_NoiseScales.x );
-				simplePerlin2D142 = simplePerlin2D142*0.5 + 0.5;
-				float simplePerlin2D124 = snoise( texCoord121*_NoiseScales.y );
-				simplePerlin2D124 = simplePerlin2D124*0.5 + 0.5;
-				float temp_output_144_0 = ( simplePerlin2D142 * simplePerlin2D124 );
-				float dotResult118 = dot( ( _FadeDirection * IN.ase_texcoord5.xyz ) , float3( 1,1,1 ) );
-				float temp_output_115_0 = ( -1.0 + _Overlap );
-				float temp_output_116_0 = ( _ObjectHeightAdjust + 2.0 + _Overlap );
-				float temp_output_125_0 = step( temp_output_144_0 , ( ( dotResult118 + (temp_output_115_0 + (_FadeShift - 0.0) * (temp_output_116_0 - temp_output_115_0) / (1.0 - 0.0)) ) / _FadeBlur ) );
-				float lerpResult136 = lerp( temp_output_125_0 , ( 1.0 - step( temp_output_144_0 , ( ( dotResult118 + (( temp_output_115_0 + _EmissionOffset ) + (_FadeShift - 0.0) * (temp_output_116_0 - ( temp_output_115_0 + _EmissionOffset )) / (1.0 - 0.0)) ) / _FadeBlur ) ) ) , _InvertFade);
-				float emissionAlpha138 = lerpResult136;
-				float4 lerpResult22 = lerp( _Emission , float4( 0,0,0,0 ) , emissionAlpha138);
-				
-				float lerpResult128 = lerp( temp_output_125_0 , ( 1.0 - temp_output_125_0 ) , _InvertFade);
-				float alpha129 = lerpResult128;
-				float4 temp_cast_2 = (alpha129).xxxx;
-				float4 lerpResult107 = lerp( temp_cast_2 , ( lerpResult22 * alpha129 ) , _EmissionOnly);
+				float dotResult69 = dot( ( _FadeDirection * IN.ase_texcoord4.xyz ) , float3( 1,1,1 ) );
+				float temp_output_65_0 = ( dotResult69 + (-1.0 + (_FadeShift - 0.0) * (( _ObjectHeightAdjust + 2.0 ) - -1.0) / (1.0 - 0.0)) );
+				float temp_output_75_0 = ( temp_output_65_0 / _FadeBlur );
+				float2 _OverlapRefactor = float2(0,1);
+				float2 texCoord6 = IN.ase_texcoord5.xy * float2( 2,1 ) + float2( 0,0 );
+				float simplePerlin2D7 = snoise( texCoord6*_NoiseScale );
+				simplePerlin2D7 = simplePerlin2D7*0.5 + 0.5;
+				float smoothstepResult110 = smoothstep( ( _OverlapRefactor.x + _Overlap ) , ( _OverlapRefactor.y + _Overlap ) , simplePerlin2D7);
+				float simplePerlin2D93 = snoise( texCoord6*_NoiseTurbulence );
+				simplePerlin2D93 = simplePerlin2D93*0.5 + 0.5;
+				float noiseTurb99 = ( simplePerlin2D93 * ( temp_output_75_0 + _TurbulenceTweak ) );
+				float temp_output_88_0 = ( temp_output_75_0 * smoothstepResult110 * saturate( ( noiseTurb99 + temp_output_65_0 ) ) );
+				float smoothstepResult117 = smoothstep( 0.0 , 0.17 , temp_output_88_0);
+				float temp_output_90_0 = saturate( smoothstepResult117 );
+				float lerpResult104 = lerp( temp_output_90_0 , 0.0 , _InvertFade);
+				float edgeBlur86 = lerpResult104;
+				float4 lerpResult22 = lerp( _Emission , float4( 0,0,0,0 ) , edgeBlur86);
 				
 
-				float3 BaseColor = ( _Tint * Albedo56 ).rgb;
+				float3 BaseColor = lerpResult22.rgb;
 				float3 Emission = lerpResult22.rgb;
-				float Alpha = lerpResult107.r;
+				float Alpha = saturate( ( lerpResult22 * edgeBlur86 ) ).r;
 				float AlphaClipThreshold = _AlphaClip;
 
 				#ifdef _ALPHATEST_ON
@@ -2075,7 +1994,7 @@ Shader "Object_SpawnIn"
 			Tags { "LightMode"="Universal2D" }
 
 			Blend One Zero, One Zero
-			ZWrite On
+			ZWrite Off
 			ZTest LEqual
 			Offset 0 , 0
 			ColorMask RGBA
@@ -2086,7 +2005,6 @@ Shader "Object_SpawnIn"
 			#define ASE_FOG 1
 			#define _EMISSION
 			#define _ALPHATEST_ON 1
-			#define _NORMALMAP 1
 			#define ASE_SRP_VERSION 140010
 
 
@@ -2145,25 +2063,16 @@ Shader "Object_SpawnIn"
 			};
 
 			CBUFFER_START(UnityPerMaterial)
-			float4 _Tint;
-			float4 _Albedo1_ST;
-			float4 _Normal_ST;
-			float4 _AO_ST;
 			float4 _Emission;
-			float4 _Metallic_ST;
-			float4 _Mask_ST;
 			float3 _FadeDirection;
-			float2 _NoiseScales;
-			float _SmoothTweak;
-			float _FlipSmooth;
-			float _InvertFade;
+			float _FadeShift;
 			float _ObjectHeightAdjust;
 			float _FadeBlur;
-			float _EmissionOnly;
 			float _Overlap;
-			float _FadeShift;
-			float _FlipNormal;
-			float _EmissionOffset;
+			float _NoiseScale;
+			float _NoiseTurbulence;
+			float _TurbulenceTweak;
+			float _InvertFade;
 			float _AlphaClip;
 			#ifdef ASE_TRANSMISSION
 				float _TransmissionShadow;
@@ -2195,8 +2104,7 @@ Shader "Object_SpawnIn"
 				int _PassValue;
 			#endif
 
-			sampler2D _Albedo1;
-
+			
 
 			float3 mod2D289( float3 x ) { return x - floor( x * ( 1.0 / 289.0 ) ) * 289.0; }
 			float2 mod2D289( float2 x ) { return x - floor( x * ( 1.0 / 289.0 ) ) * 289.0; }
@@ -2234,11 +2142,11 @@ Shader "Object_SpawnIn"
 				UNITY_TRANSFER_INSTANCE_ID( v, o );
 				UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO( o );
 
-				o.ase_texcoord2.xy = v.ase_texcoord.xy;
-				o.ase_texcoord3 = v.positionOS;
+				o.ase_texcoord2 = v.positionOS;
+				o.ase_texcoord3.xy = v.ase_texcoord.xy;
 				
 				//setting value to unused interpolator channels and avoid initialization warnings
-				o.ase_texcoord2.zw = 0;
+				o.ase_texcoord3.zw = 0;
 
 				#ifdef ASE_ABSOLUTE_VERTEX_POS
 					float3 defaultVertexValue = v.positionOS.xyz;
@@ -2370,30 +2278,27 @@ Shader "Object_SpawnIn"
 					#endif
 				#endif
 
-				float2 uv_Albedo1 = IN.ase_texcoord2.xy * _Albedo1_ST.xy + _Albedo1_ST.zw;
-				float4 Albedo56 = tex2D( _Albedo1, uv_Albedo1 );
-				
-				float2 texCoord121 = IN.ase_texcoord2.xy * float2( 2,1 ) + float2( 0,0 );
-				float simplePerlin2D142 = snoise( texCoord121*_NoiseScales.x );
-				simplePerlin2D142 = simplePerlin2D142*0.5 + 0.5;
-				float simplePerlin2D124 = snoise( texCoord121*_NoiseScales.y );
-				simplePerlin2D124 = simplePerlin2D124*0.5 + 0.5;
-				float temp_output_144_0 = ( simplePerlin2D142 * simplePerlin2D124 );
-				float dotResult118 = dot( ( _FadeDirection * IN.ase_texcoord3.xyz ) , float3( 1,1,1 ) );
-				float temp_output_115_0 = ( -1.0 + _Overlap );
-				float temp_output_116_0 = ( _ObjectHeightAdjust + 2.0 + _Overlap );
-				float temp_output_125_0 = step( temp_output_144_0 , ( ( dotResult118 + (temp_output_115_0 + (_FadeShift - 0.0) * (temp_output_116_0 - temp_output_115_0) / (1.0 - 0.0)) ) / _FadeBlur ) );
-				float lerpResult128 = lerp( temp_output_125_0 , ( 1.0 - temp_output_125_0 ) , _InvertFade);
-				float alpha129 = lerpResult128;
-				float4 temp_cast_1 = (alpha129).xxxx;
-				float lerpResult136 = lerp( temp_output_125_0 , ( 1.0 - step( temp_output_144_0 , ( ( dotResult118 + (( temp_output_115_0 + _EmissionOffset ) + (_FadeShift - 0.0) * (temp_output_116_0 - ( temp_output_115_0 + _EmissionOffset )) / (1.0 - 0.0)) ) / _FadeBlur ) ) ) , _InvertFade);
-				float emissionAlpha138 = lerpResult136;
-				float4 lerpResult22 = lerp( _Emission , float4( 0,0,0,0 ) , emissionAlpha138);
-				float4 lerpResult107 = lerp( temp_cast_1 , ( lerpResult22 * alpha129 ) , _EmissionOnly);
+				float dotResult69 = dot( ( _FadeDirection * IN.ase_texcoord2.xyz ) , float3( 1,1,1 ) );
+				float temp_output_65_0 = ( dotResult69 + (-1.0 + (_FadeShift - 0.0) * (( _ObjectHeightAdjust + 2.0 ) - -1.0) / (1.0 - 0.0)) );
+				float temp_output_75_0 = ( temp_output_65_0 / _FadeBlur );
+				float2 _OverlapRefactor = float2(0,1);
+				float2 texCoord6 = IN.ase_texcoord3.xy * float2( 2,1 ) + float2( 0,0 );
+				float simplePerlin2D7 = snoise( texCoord6*_NoiseScale );
+				simplePerlin2D7 = simplePerlin2D7*0.5 + 0.5;
+				float smoothstepResult110 = smoothstep( ( _OverlapRefactor.x + _Overlap ) , ( _OverlapRefactor.y + _Overlap ) , simplePerlin2D7);
+				float simplePerlin2D93 = snoise( texCoord6*_NoiseTurbulence );
+				simplePerlin2D93 = simplePerlin2D93*0.5 + 0.5;
+				float noiseTurb99 = ( simplePerlin2D93 * ( temp_output_75_0 + _TurbulenceTweak ) );
+				float temp_output_88_0 = ( temp_output_75_0 * smoothstepResult110 * saturate( ( noiseTurb99 + temp_output_65_0 ) ) );
+				float smoothstepResult117 = smoothstep( 0.0 , 0.17 , temp_output_88_0);
+				float temp_output_90_0 = saturate( smoothstepResult117 );
+				float lerpResult104 = lerp( temp_output_90_0 , 0.0 , _InvertFade);
+				float edgeBlur86 = lerpResult104;
+				float4 lerpResult22 = lerp( _Emission , float4( 0,0,0,0 ) , edgeBlur86);
 				
 
-				float3 BaseColor = ( _Tint * Albedo56 ).rgb;
-				float Alpha = lerpResult107.r;
+				float3 BaseColor = lerpResult22.rgb;
+				float Alpha = saturate( ( lerpResult22 * edgeBlur86 ) ).r;
 				float AlphaClipThreshold = _AlphaClip;
 
 				half4 color = half4(BaseColor, Alpha );
@@ -2431,7 +2336,6 @@ Shader "Object_SpawnIn"
 			#define ASE_FOG 1
 			#define _EMISSION
 			#define _ALPHATEST_ON 1
-			#define _NORMALMAP 1
 			#define ASE_SRP_VERSION 140010
 
 
@@ -2523,25 +2427,16 @@ Shader "Object_SpawnIn"
 			};
 
 			CBUFFER_START(UnityPerMaterial)
-			float4 _Tint;
-			float4 _Albedo1_ST;
-			float4 _Normal_ST;
-			float4 _AO_ST;
 			float4 _Emission;
-			float4 _Metallic_ST;
-			float4 _Mask_ST;
 			float3 _FadeDirection;
-			float2 _NoiseScales;
-			float _SmoothTweak;
-			float _FlipSmooth;
-			float _InvertFade;
+			float _FadeShift;
 			float _ObjectHeightAdjust;
 			float _FadeBlur;
-			float _EmissionOnly;
 			float _Overlap;
-			float _FadeShift;
-			float _FlipNormal;
-			float _EmissionOffset;
+			float _NoiseScale;
+			float _NoiseTurbulence;
+			float _TurbulenceTweak;
+			float _InvertFade;
 			float _AlphaClip;
 			#ifdef ASE_TRANSMISSION
 				float _TransmissionShadow;
@@ -2573,8 +2468,7 @@ Shader "Object_SpawnIn"
 				int _PassValue;
 			#endif
 
-			sampler2D _Normal;
-
+			
 
 			float3 mod2D289( float3 x ) { return x - floor( x * ( 1.0 / 289.0 ) ) * 289.0; }
 			float2 mod2D289( float2 x ) { return x - floor( x * ( 1.0 / 289.0 ) ) * 289.0; }
@@ -2612,11 +2506,11 @@ Shader "Object_SpawnIn"
 				UNITY_TRANSFER_INSTANCE_ID(v, o);
 				UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
 
-				o.ase_texcoord5.xy = v.ase_texcoord.xy;
-				o.ase_texcoord6 = v.positionOS;
+				o.ase_texcoord5 = v.positionOS;
+				o.ase_texcoord6.xy = v.ase_texcoord.xy;
 				
 				//setting value to unused interpolator channels and avoid initialization warnings
-				o.ase_texcoord5.zw = 0;
+				o.ase_texcoord6.zw = 0;
 				#ifdef ASE_ABSOLUTE_VERTEX_POS
 					float3 defaultVertexValue = v.positionOS.xyz;
 				#else
@@ -2770,32 +2664,27 @@ Shader "Object_SpawnIn"
 					#endif
 				#endif
 
-				float2 uv_Normal = IN.ase_texcoord5.xy * _Normal_ST.xy + _Normal_ST.zw;
-				float3 tex2DNode51 = UnpackNormalScale( tex2D( _Normal, uv_Normal ), 1.0f );
-				float3 lerpResult38 = lerp( tex2DNode51 , ( ( float3( 0, 1, 0 ) * -2 + 1 ) * tex2DNode51 ) , _FlipNormal);
-				float3 Normal40 = lerpResult38;
-				
-				float2 texCoord121 = IN.ase_texcoord5.xy * float2( 2,1 ) + float2( 0,0 );
-				float simplePerlin2D142 = snoise( texCoord121*_NoiseScales.x );
-				simplePerlin2D142 = simplePerlin2D142*0.5 + 0.5;
-				float simplePerlin2D124 = snoise( texCoord121*_NoiseScales.y );
-				simplePerlin2D124 = simplePerlin2D124*0.5 + 0.5;
-				float temp_output_144_0 = ( simplePerlin2D142 * simplePerlin2D124 );
-				float dotResult118 = dot( ( _FadeDirection * IN.ase_texcoord6.xyz ) , float3( 1,1,1 ) );
-				float temp_output_115_0 = ( -1.0 + _Overlap );
-				float temp_output_116_0 = ( _ObjectHeightAdjust + 2.0 + _Overlap );
-				float temp_output_125_0 = step( temp_output_144_0 , ( ( dotResult118 + (temp_output_115_0 + (_FadeShift - 0.0) * (temp_output_116_0 - temp_output_115_0) / (1.0 - 0.0)) ) / _FadeBlur ) );
-				float lerpResult128 = lerp( temp_output_125_0 , ( 1.0 - temp_output_125_0 ) , _InvertFade);
-				float alpha129 = lerpResult128;
-				float4 temp_cast_0 = (alpha129).xxxx;
-				float lerpResult136 = lerp( temp_output_125_0 , ( 1.0 - step( temp_output_144_0 , ( ( dotResult118 + (( temp_output_115_0 + _EmissionOffset ) + (_FadeShift - 0.0) * (temp_output_116_0 - ( temp_output_115_0 + _EmissionOffset )) / (1.0 - 0.0)) ) / _FadeBlur ) ) ) , _InvertFade);
-				float emissionAlpha138 = lerpResult136;
-				float4 lerpResult22 = lerp( _Emission , float4( 0,0,0,0 ) , emissionAlpha138);
-				float4 lerpResult107 = lerp( temp_cast_0 , ( lerpResult22 * alpha129 ) , _EmissionOnly);
+				float dotResult69 = dot( ( _FadeDirection * IN.ase_texcoord5.xyz ) , float3( 1,1,1 ) );
+				float temp_output_65_0 = ( dotResult69 + (-1.0 + (_FadeShift - 0.0) * (( _ObjectHeightAdjust + 2.0 ) - -1.0) / (1.0 - 0.0)) );
+				float temp_output_75_0 = ( temp_output_65_0 / _FadeBlur );
+				float2 _OverlapRefactor = float2(0,1);
+				float2 texCoord6 = IN.ase_texcoord6.xy * float2( 2,1 ) + float2( 0,0 );
+				float simplePerlin2D7 = snoise( texCoord6*_NoiseScale );
+				simplePerlin2D7 = simplePerlin2D7*0.5 + 0.5;
+				float smoothstepResult110 = smoothstep( ( _OverlapRefactor.x + _Overlap ) , ( _OverlapRefactor.y + _Overlap ) , simplePerlin2D7);
+				float simplePerlin2D93 = snoise( texCoord6*_NoiseTurbulence );
+				simplePerlin2D93 = simplePerlin2D93*0.5 + 0.5;
+				float noiseTurb99 = ( simplePerlin2D93 * ( temp_output_75_0 + _TurbulenceTweak ) );
+				float temp_output_88_0 = ( temp_output_75_0 * smoothstepResult110 * saturate( ( noiseTurb99 + temp_output_65_0 ) ) );
+				float smoothstepResult117 = smoothstep( 0.0 , 0.17 , temp_output_88_0);
+				float temp_output_90_0 = saturate( smoothstepResult117 );
+				float lerpResult104 = lerp( temp_output_90_0 , 0.0 , _InvertFade);
+				float edgeBlur86 = lerpResult104;
+				float4 lerpResult22 = lerp( _Emission , float4( 0,0,0,0 ) , edgeBlur86);
 				
 
-				float3 Normal = Normal40;
-				float Alpha = lerpResult107.r;
+				float3 Normal = float3(0, 0, 1);
+				float Alpha = saturate( ( lerpResult22 * edgeBlur86 ) ).r;
 				float AlphaClipThreshold = _AlphaClip;
 
 				#ifdef ASE_DEPTH_WRITE_ON
@@ -2852,7 +2741,7 @@ Shader "Object_SpawnIn"
 			Tags { "LightMode"="UniversalGBuffer" }
 
 			Blend One Zero, One Zero
-			ZWrite On
+			ZWrite Off
 			ZTest LEqual
 			Offset 0 , 0
 			ColorMask RGBA
@@ -2871,7 +2760,6 @@ Shader "Object_SpawnIn"
 			#define ASE_FOG 1
 			#define _EMISSION
 			#define _ALPHATEST_ON 1
-			#define _NORMALMAP 1
 			#define ASE_SRP_VERSION 140010
 
 
@@ -2996,25 +2884,16 @@ Shader "Object_SpawnIn"
 			};
 
 			CBUFFER_START(UnityPerMaterial)
-			float4 _Tint;
-			float4 _Albedo1_ST;
-			float4 _Normal_ST;
-			float4 _AO_ST;
 			float4 _Emission;
-			float4 _Metallic_ST;
-			float4 _Mask_ST;
 			float3 _FadeDirection;
-			float2 _NoiseScales;
-			float _SmoothTweak;
-			float _FlipSmooth;
-			float _InvertFade;
+			float _FadeShift;
 			float _ObjectHeightAdjust;
 			float _FadeBlur;
-			float _EmissionOnly;
 			float _Overlap;
-			float _FadeShift;
-			float _FlipNormal;
-			float _EmissionOffset;
+			float _NoiseScale;
+			float _NoiseTurbulence;
+			float _TurbulenceTweak;
+			float _InvertFade;
 			float _AlphaClip;
 			#ifdef ASE_TRANSMISSION
 				float _TransmissionShadow;
@@ -3046,12 +2925,7 @@ Shader "Object_SpawnIn"
 				int _PassValue;
 			#endif
 
-			sampler2D _Albedo1;
-			sampler2D _Normal;
-			sampler2D _Mask;
-			sampler2D _Metallic;
-			sampler2D _AO;
-
+			
 
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/UnityGBuffer.hlsl"
 
@@ -3091,11 +2965,11 @@ Shader "Object_SpawnIn"
 				UNITY_TRANSFER_INSTANCE_ID(v, o);
 				UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
 
-				o.ase_texcoord8.xy = v.texcoord.xy;
-				o.ase_texcoord9 = v.positionOS;
+				o.ase_texcoord8 = v.positionOS;
+				o.ase_texcoord9.xy = v.texcoord.xy;
 				
 				//setting value to unused interpolator channels and avoid initialization warnings
-				o.ase_texcoord8.zw = 0;
+				o.ase_texcoord9.zw = 0;
 				#ifdef ASE_ABSOLUTE_VERTEX_POS
 					float3 defaultVertexValue = v.positionOS.xyz;
 				#else
@@ -3284,54 +3158,33 @@ Shader "Object_SpawnIn"
 
 				WorldViewDirection = SafeNormalize( WorldViewDirection );
 
-				float2 uv_Albedo1 = IN.ase_texcoord8.xy * _Albedo1_ST.xy + _Albedo1_ST.zw;
-				float4 Albedo56 = tex2D( _Albedo1, uv_Albedo1 );
-				
-				float2 uv_Normal = IN.ase_texcoord8.xy * _Normal_ST.xy + _Normal_ST.zw;
-				float3 tex2DNode51 = UnpackNormalScale( tex2D( _Normal, uv_Normal ), 1.0f );
-				float3 lerpResult38 = lerp( tex2DNode51 , ( ( float3( 0, 1, 0 ) * -2 + 1 ) * tex2DNode51 ) , _FlipNormal);
-				float3 Normal40 = lerpResult38;
-				
-				float2 texCoord121 = IN.ase_texcoord8.xy * float2( 2,1 ) + float2( 0,0 );
-				float simplePerlin2D142 = snoise( texCoord121*_NoiseScales.x );
-				simplePerlin2D142 = simplePerlin2D142*0.5 + 0.5;
-				float simplePerlin2D124 = snoise( texCoord121*_NoiseScales.y );
-				simplePerlin2D124 = simplePerlin2D124*0.5 + 0.5;
-				float temp_output_144_0 = ( simplePerlin2D142 * simplePerlin2D124 );
-				float dotResult118 = dot( ( _FadeDirection * IN.ase_texcoord9.xyz ) , float3( 1,1,1 ) );
-				float temp_output_115_0 = ( -1.0 + _Overlap );
-				float temp_output_116_0 = ( _ObjectHeightAdjust + 2.0 + _Overlap );
-				float temp_output_125_0 = step( temp_output_144_0 , ( ( dotResult118 + (temp_output_115_0 + (_FadeShift - 0.0) * (temp_output_116_0 - temp_output_115_0) / (1.0 - 0.0)) ) / _FadeBlur ) );
-				float lerpResult136 = lerp( temp_output_125_0 , ( 1.0 - step( temp_output_144_0 , ( ( dotResult118 + (( temp_output_115_0 + _EmissionOffset ) + (_FadeShift - 0.0) * (temp_output_116_0 - ( temp_output_115_0 + _EmissionOffset )) / (1.0 - 0.0)) ) / _FadeBlur ) ) ) , _InvertFade);
-				float emissionAlpha138 = lerpResult136;
-				float4 lerpResult22 = lerp( _Emission , float4( 0,0,0,0 ) , emissionAlpha138);
-				
-				float2 uv_Mask = IN.ase_texcoord8.xy * _Mask_ST.xy + _Mask_ST.zw;
-				float4 tex2DNode53 = tex2D( _Mask, uv_Mask );
-				float2 uv_Metallic = IN.ase_texcoord8.xy * _Metallic_ST.xy + _Metallic_ST.zw;
-				float4 tex2DNode54 = tex2D( _Metallic, uv_Metallic );
-				float metal59 = ( tex2DNode53.b * tex2DNode54.r );
-				
-				float lerpResult47 = lerp( tex2DNode53.g , ( 1.0 - tex2DNode53.g ) , _FlipSmooth);
-				float Smooth58 = saturate( ( tex2DNode54.r * lerpResult47 * _SmoothTweak ) );
-				
-				float2 uv_AO = IN.ase_texcoord8.xy * _AO_ST.xy + _AO_ST.zw;
-				float ao57 = ( tex2DNode53.r * tex2D( _AO, uv_AO ).r );
-				
-				float lerpResult128 = lerp( temp_output_125_0 , ( 1.0 - temp_output_125_0 ) , _InvertFade);
-				float alpha129 = lerpResult128;
-				float4 temp_cast_2 = (alpha129).xxxx;
-				float4 lerpResult107 = lerp( temp_cast_2 , ( lerpResult22 * alpha129 ) , _EmissionOnly);
+				float dotResult69 = dot( ( _FadeDirection * IN.ase_texcoord8.xyz ) , float3( 1,1,1 ) );
+				float temp_output_65_0 = ( dotResult69 + (-1.0 + (_FadeShift - 0.0) * (( _ObjectHeightAdjust + 2.0 ) - -1.0) / (1.0 - 0.0)) );
+				float temp_output_75_0 = ( temp_output_65_0 / _FadeBlur );
+				float2 _OverlapRefactor = float2(0,1);
+				float2 texCoord6 = IN.ase_texcoord9.xy * float2( 2,1 ) + float2( 0,0 );
+				float simplePerlin2D7 = snoise( texCoord6*_NoiseScale );
+				simplePerlin2D7 = simplePerlin2D7*0.5 + 0.5;
+				float smoothstepResult110 = smoothstep( ( _OverlapRefactor.x + _Overlap ) , ( _OverlapRefactor.y + _Overlap ) , simplePerlin2D7);
+				float simplePerlin2D93 = snoise( texCoord6*_NoiseTurbulence );
+				simplePerlin2D93 = simplePerlin2D93*0.5 + 0.5;
+				float noiseTurb99 = ( simplePerlin2D93 * ( temp_output_75_0 + _TurbulenceTweak ) );
+				float temp_output_88_0 = ( temp_output_75_0 * smoothstepResult110 * saturate( ( noiseTurb99 + temp_output_65_0 ) ) );
+				float smoothstepResult117 = smoothstep( 0.0 , 0.17 , temp_output_88_0);
+				float temp_output_90_0 = saturate( smoothstepResult117 );
+				float lerpResult104 = lerp( temp_output_90_0 , 0.0 , _InvertFade);
+				float edgeBlur86 = lerpResult104;
+				float4 lerpResult22 = lerp( _Emission , float4( 0,0,0,0 ) , edgeBlur86);
 				
 
-				float3 BaseColor = ( _Tint * Albedo56 ).rgb;
-				float3 Normal = Normal40;
+				float3 BaseColor = lerpResult22.rgb;
+				float3 Normal = float3(0, 0, 1);
 				float3 Emission = lerpResult22.rgb;
 				float3 Specular = 0.5;
-				float Metallic = metal59;
-				float Smoothness = Smooth58;
-				float Occlusion = ao57;
-				float Alpha = lerpResult107.r;
+				float Metallic = 0;
+				float Smoothness = 0.5;
+				float Occlusion = 1;
+				float Alpha = saturate( ( lerpResult22 * edgeBlur86 ) ).r;
 				float AlphaClipThreshold = _AlphaClip;
 				float AlphaClipThresholdShadow = 0.5;
 				float3 BakedGI = 0;
@@ -3452,7 +3305,6 @@ Shader "Object_SpawnIn"
 			#define ASE_FOG 1
 			#define _EMISSION
 			#define _ALPHATEST_ON 1
-			#define _NORMALMAP 1
 			#define ASE_SRP_VERSION 140010
 
 
@@ -3518,25 +3370,16 @@ Shader "Object_SpawnIn"
 			};
 
 			CBUFFER_START(UnityPerMaterial)
-			float4 _Tint;
-			float4 _Albedo1_ST;
-			float4 _Normal_ST;
-			float4 _AO_ST;
 			float4 _Emission;
-			float4 _Metallic_ST;
-			float4 _Mask_ST;
 			float3 _FadeDirection;
-			float2 _NoiseScales;
-			float _SmoothTweak;
-			float _FlipSmooth;
-			float _InvertFade;
+			float _FadeShift;
 			float _ObjectHeightAdjust;
 			float _FadeBlur;
-			float _EmissionOnly;
 			float _Overlap;
-			float _FadeShift;
-			float _FlipNormal;
-			float _EmissionOffset;
+			float _NoiseScale;
+			float _NoiseTurbulence;
+			float _TurbulenceTweak;
+			float _InvertFade;
 			float _AlphaClip;
 			#ifdef ASE_TRANSMISSION
 				float _TransmissionShadow;
@@ -3614,11 +3457,11 @@ Shader "Object_SpawnIn"
 				UNITY_TRANSFER_INSTANCE_ID(v, o);
 				UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
 
-				o.ase_texcoord.xy = v.ase_texcoord.xy;
-				o.ase_texcoord1 = v.positionOS;
+				o.ase_texcoord = v.positionOS;
+				o.ase_texcoord1.xy = v.ase_texcoord.xy;
 				
 				//setting value to unused interpolator channels and avoid initialization warnings
-				o.ase_texcoord.zw = 0;
+				o.ase_texcoord1.zw = 0;
 
 				#ifdef ASE_ABSOLUTE_VERTEX_POS
 					float3 defaultVertexValue = v.positionOS.xyz;
@@ -3727,26 +3570,26 @@ Shader "Object_SpawnIn"
 			{
 				SurfaceDescription surfaceDescription = (SurfaceDescription)0;
 
-				float2 texCoord121 = IN.ase_texcoord.xy * float2( 2,1 ) + float2( 0,0 );
-				float simplePerlin2D142 = snoise( texCoord121*_NoiseScales.x );
-				simplePerlin2D142 = simplePerlin2D142*0.5 + 0.5;
-				float simplePerlin2D124 = snoise( texCoord121*_NoiseScales.y );
-				simplePerlin2D124 = simplePerlin2D124*0.5 + 0.5;
-				float temp_output_144_0 = ( simplePerlin2D142 * simplePerlin2D124 );
-				float dotResult118 = dot( ( _FadeDirection * IN.ase_texcoord1.xyz ) , float3( 1,1,1 ) );
-				float temp_output_115_0 = ( -1.0 + _Overlap );
-				float temp_output_116_0 = ( _ObjectHeightAdjust + 2.0 + _Overlap );
-				float temp_output_125_0 = step( temp_output_144_0 , ( ( dotResult118 + (temp_output_115_0 + (_FadeShift - 0.0) * (temp_output_116_0 - temp_output_115_0) / (1.0 - 0.0)) ) / _FadeBlur ) );
-				float lerpResult128 = lerp( temp_output_125_0 , ( 1.0 - temp_output_125_0 ) , _InvertFade);
-				float alpha129 = lerpResult128;
-				float4 temp_cast_0 = (alpha129).xxxx;
-				float lerpResult136 = lerp( temp_output_125_0 , ( 1.0 - step( temp_output_144_0 , ( ( dotResult118 + (( temp_output_115_0 + _EmissionOffset ) + (_FadeShift - 0.0) * (temp_output_116_0 - ( temp_output_115_0 + _EmissionOffset )) / (1.0 - 0.0)) ) / _FadeBlur ) ) ) , _InvertFade);
-				float emissionAlpha138 = lerpResult136;
-				float4 lerpResult22 = lerp( _Emission , float4( 0,0,0,0 ) , emissionAlpha138);
-				float4 lerpResult107 = lerp( temp_cast_0 , ( lerpResult22 * alpha129 ) , _EmissionOnly);
+				float dotResult69 = dot( ( _FadeDirection * IN.ase_texcoord.xyz ) , float3( 1,1,1 ) );
+				float temp_output_65_0 = ( dotResult69 + (-1.0 + (_FadeShift - 0.0) * (( _ObjectHeightAdjust + 2.0 ) - -1.0) / (1.0 - 0.0)) );
+				float temp_output_75_0 = ( temp_output_65_0 / _FadeBlur );
+				float2 _OverlapRefactor = float2(0,1);
+				float2 texCoord6 = IN.ase_texcoord1.xy * float2( 2,1 ) + float2( 0,0 );
+				float simplePerlin2D7 = snoise( texCoord6*_NoiseScale );
+				simplePerlin2D7 = simplePerlin2D7*0.5 + 0.5;
+				float smoothstepResult110 = smoothstep( ( _OverlapRefactor.x + _Overlap ) , ( _OverlapRefactor.y + _Overlap ) , simplePerlin2D7);
+				float simplePerlin2D93 = snoise( texCoord6*_NoiseTurbulence );
+				simplePerlin2D93 = simplePerlin2D93*0.5 + 0.5;
+				float noiseTurb99 = ( simplePerlin2D93 * ( temp_output_75_0 + _TurbulenceTweak ) );
+				float temp_output_88_0 = ( temp_output_75_0 * smoothstepResult110 * saturate( ( noiseTurb99 + temp_output_65_0 ) ) );
+				float smoothstepResult117 = smoothstep( 0.0 , 0.17 , temp_output_88_0);
+				float temp_output_90_0 = saturate( smoothstepResult117 );
+				float lerpResult104 = lerp( temp_output_90_0 , 0.0 , _InvertFade);
+				float edgeBlur86 = lerpResult104;
+				float4 lerpResult22 = lerp( _Emission , float4( 0,0,0,0 ) , edgeBlur86);
 				
 
-				surfaceDescription.Alpha = lerpResult107.r;
+				surfaceDescription.Alpha = saturate( ( lerpResult22 * edgeBlur86 ) ).r;
 				surfaceDescription.AlphaClipThreshold = _AlphaClip;
 
 				#if _ALPHATEST_ON
@@ -3788,7 +3631,6 @@ Shader "Object_SpawnIn"
 			#define ASE_FOG 1
 			#define _EMISSION
 			#define _ALPHATEST_ON 1
-			#define _NORMALMAP 1
 			#define ASE_SRP_VERSION 140010
 
 
@@ -3854,25 +3696,16 @@ Shader "Object_SpawnIn"
 			};
 
 			CBUFFER_START(UnityPerMaterial)
-			float4 _Tint;
-			float4 _Albedo1_ST;
-			float4 _Normal_ST;
-			float4 _AO_ST;
 			float4 _Emission;
-			float4 _Metallic_ST;
-			float4 _Mask_ST;
 			float3 _FadeDirection;
-			float2 _NoiseScales;
-			float _SmoothTweak;
-			float _FlipSmooth;
-			float _InvertFade;
+			float _FadeShift;
 			float _ObjectHeightAdjust;
 			float _FadeBlur;
-			float _EmissionOnly;
 			float _Overlap;
-			float _FadeShift;
-			float _FlipNormal;
-			float _EmissionOffset;
+			float _NoiseScale;
+			float _NoiseTurbulence;
+			float _TurbulenceTweak;
+			float _InvertFade;
 			float _AlphaClip;
 			#ifdef ASE_TRANSMISSION
 				float _TransmissionShadow;
@@ -3950,11 +3783,11 @@ Shader "Object_SpawnIn"
 				UNITY_TRANSFER_INSTANCE_ID(v, o);
 				UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
 
-				o.ase_texcoord.xy = v.ase_texcoord.xy;
-				o.ase_texcoord1 = v.positionOS;
+				o.ase_texcoord = v.positionOS;
+				o.ase_texcoord1.xy = v.ase_texcoord.xy;
 				
 				//setting value to unused interpolator channels and avoid initialization warnings
-				o.ase_texcoord.zw = 0;
+				o.ase_texcoord1.zw = 0;
 
 				#ifdef ASE_ABSOLUTE_VERTEX_POS
 					float3 defaultVertexValue = v.positionOS.xyz;
@@ -4062,26 +3895,26 @@ Shader "Object_SpawnIn"
 			{
 				SurfaceDescription surfaceDescription = (SurfaceDescription)0;
 
-				float2 texCoord121 = IN.ase_texcoord.xy * float2( 2,1 ) + float2( 0,0 );
-				float simplePerlin2D142 = snoise( texCoord121*_NoiseScales.x );
-				simplePerlin2D142 = simplePerlin2D142*0.5 + 0.5;
-				float simplePerlin2D124 = snoise( texCoord121*_NoiseScales.y );
-				simplePerlin2D124 = simplePerlin2D124*0.5 + 0.5;
-				float temp_output_144_0 = ( simplePerlin2D142 * simplePerlin2D124 );
-				float dotResult118 = dot( ( _FadeDirection * IN.ase_texcoord1.xyz ) , float3( 1,1,1 ) );
-				float temp_output_115_0 = ( -1.0 + _Overlap );
-				float temp_output_116_0 = ( _ObjectHeightAdjust + 2.0 + _Overlap );
-				float temp_output_125_0 = step( temp_output_144_0 , ( ( dotResult118 + (temp_output_115_0 + (_FadeShift - 0.0) * (temp_output_116_0 - temp_output_115_0) / (1.0 - 0.0)) ) / _FadeBlur ) );
-				float lerpResult128 = lerp( temp_output_125_0 , ( 1.0 - temp_output_125_0 ) , _InvertFade);
-				float alpha129 = lerpResult128;
-				float4 temp_cast_0 = (alpha129).xxxx;
-				float lerpResult136 = lerp( temp_output_125_0 , ( 1.0 - step( temp_output_144_0 , ( ( dotResult118 + (( temp_output_115_0 + _EmissionOffset ) + (_FadeShift - 0.0) * (temp_output_116_0 - ( temp_output_115_0 + _EmissionOffset )) / (1.0 - 0.0)) ) / _FadeBlur ) ) ) , _InvertFade);
-				float emissionAlpha138 = lerpResult136;
-				float4 lerpResult22 = lerp( _Emission , float4( 0,0,0,0 ) , emissionAlpha138);
-				float4 lerpResult107 = lerp( temp_cast_0 , ( lerpResult22 * alpha129 ) , _EmissionOnly);
+				float dotResult69 = dot( ( _FadeDirection * IN.ase_texcoord.xyz ) , float3( 1,1,1 ) );
+				float temp_output_65_0 = ( dotResult69 + (-1.0 + (_FadeShift - 0.0) * (( _ObjectHeightAdjust + 2.0 ) - -1.0) / (1.0 - 0.0)) );
+				float temp_output_75_0 = ( temp_output_65_0 / _FadeBlur );
+				float2 _OverlapRefactor = float2(0,1);
+				float2 texCoord6 = IN.ase_texcoord1.xy * float2( 2,1 ) + float2( 0,0 );
+				float simplePerlin2D7 = snoise( texCoord6*_NoiseScale );
+				simplePerlin2D7 = simplePerlin2D7*0.5 + 0.5;
+				float smoothstepResult110 = smoothstep( ( _OverlapRefactor.x + _Overlap ) , ( _OverlapRefactor.y + _Overlap ) , simplePerlin2D7);
+				float simplePerlin2D93 = snoise( texCoord6*_NoiseTurbulence );
+				simplePerlin2D93 = simplePerlin2D93*0.5 + 0.5;
+				float noiseTurb99 = ( simplePerlin2D93 * ( temp_output_75_0 + _TurbulenceTweak ) );
+				float temp_output_88_0 = ( temp_output_75_0 * smoothstepResult110 * saturate( ( noiseTurb99 + temp_output_65_0 ) ) );
+				float smoothstepResult117 = smoothstep( 0.0 , 0.17 , temp_output_88_0);
+				float temp_output_90_0 = saturate( smoothstepResult117 );
+				float lerpResult104 = lerp( temp_output_90_0 , 0.0 , _InvertFade);
+				float edgeBlur86 = lerpResult104;
+				float4 lerpResult22 = lerp( _Emission , float4( 0,0,0,0 ) , edgeBlur86);
 				
 
-				surfaceDescription.Alpha = lerpResult107.r;
+				surfaceDescription.Alpha = saturate( ( lerpResult22 * edgeBlur86 ) ).r;
 				surfaceDescription.AlphaClipThreshold = _AlphaClip;
 
 				#if _ALPHATEST_ON
@@ -4115,163 +3948,112 @@ Shader "Object_SpawnIn"
 }
 /*ASEBEGIN
 Version=19602
-Node;AmplifyShaderEditor.RangedFloatNode;111;-2000,336;Inherit;False;Property;_Overlap;Overlap;15;0;Create;True;0;0;0;False;0;False;0;-0.16;0;0;0;1;FLOAT;0
-Node;AmplifyShaderEditor.PosVertexDataNode;109;-1840,16;Inherit;False;0;0;5;FLOAT3;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
-Node;AmplifyShaderEditor.Vector3Node;110;-1840,-128;Inherit;False;Property;_FadeDirection;Fade Direction;13;0;Create;True;0;0;0;False;0;False;0,-1,0;0,1,0;0;4;FLOAT3;0;FLOAT;1;FLOAT;2;FLOAT;3
-Node;AmplifyShaderEditor.RangedFloatNode;112;-2000,432;Inherit;False;Property;_ObjectHeightAdjust;Object Height Adjust;16;0;Create;True;0;0;0;False;0;False;0;0;0;0;0;1;FLOAT;0
-Node;AmplifyShaderEditor.SimpleAddOpNode;115;-1744,304;Inherit;False;2;2;0;FLOAT;-1;False;1;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.RangedFloatNode;133;-1744,624;Inherit;False;Property;_EmissionOffset;Emission Offset;18;0;Create;True;0;0;0;False;0;False;0.3172873;0;-1;1;0;1;FLOAT;0
-Node;AmplifyShaderEditor.SimpleMultiplyOpNode;114;-1616,-48;Inherit;True;2;2;0;FLOAT3;-1,0,0;False;1;FLOAT3;0,0,0;False;1;FLOAT3;0
-Node;AmplifyShaderEditor.SimpleAddOpNode;116;-1744,400;Inherit;False;3;3;0;FLOAT;0;False;1;FLOAT;2;False;2;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.SimpleAddOpNode;132;-1536,592;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.RangedFloatNode;113;-1904,192;Inherit;False;Property;_FadeShift;Fade Shift;11;1;[Header];Create;True;1;Fade Controlls;0;0;False;0;False;0;0.443;0;1;0;1;FLOAT;0
-Node;AmplifyShaderEditor.DotProductOpNode;118;-1376,-48;Inherit;True;2;0;FLOAT3;0,0,0;False;1;FLOAT3;1,1,1;False;1;FLOAT;0
-Node;AmplifyShaderEditor.TFHCRemapNode;131;-1328,448;Inherit;False;5;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;1;False;3;FLOAT;-1;False;4;FLOAT;2;False;1;FLOAT;0
-Node;AmplifyShaderEditor.TextureCoordinatesNode;121;-1344,-368;Inherit;False;0;-1;2;3;2;SAMPLER2D;;False;0;FLOAT2;2,1;False;1;FLOAT2;0,0;False;5;FLOAT2;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
-Node;AmplifyShaderEditor.Vector2Node;143;-1312,-240;Inherit;False;Property;_NoiseScales;Noise Scales;19;0;Create;True;0;0;0;False;0;False;50,5;50,5;0;3;FLOAT2;0;FLOAT;1;FLOAT;2
-Node;AmplifyShaderEditor.TFHCRemapNode;117;-1536,208;Inherit;False;5;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;1;False;3;FLOAT;-1;False;4;FLOAT;2;False;1;FLOAT;0
-Node;AmplifyShaderEditor.SimpleAddOpNode;134;-1040,448;Inherit;True;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.RangedFloatNode;120;-1072,336;Inherit;False;Property;_FadeBlur;Fade Blur;12;0;Create;True;0;0;0;False;0;False;0.6433212;2.89;0.01;5;0;1;FLOAT;0
-Node;AmplifyShaderEditor.NoiseGeneratorNode;124;-1040,-256;Inherit;True;Simplex2D;True;False;2;0;FLOAT2;0,0;False;1;FLOAT;1;False;1;FLOAT;0
-Node;AmplifyShaderEditor.NoiseGeneratorNode;142;-1040,-512;Inherit;True;Simplex2D;True;False;2;0;FLOAT2;0,0;False;1;FLOAT;1;False;1;FLOAT;0
-Node;AmplifyShaderEditor.SimpleAddOpNode;119;-1040,96;Inherit;True;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.SimpleDivideOpNode;141;-656,512;Inherit;True;2;0;FLOAT;0;False;1;FLOAT;2.36;False;1;FLOAT;0
-Node;AmplifyShaderEditor.SimpleMultiplyOpNode;144;-720,-304;Inherit;True;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.StepOpNode;135;-384,512;Inherit;True;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.SimpleDivideOpNode;123;-656,208;Inherit;True;2;0;FLOAT;0;False;1;FLOAT;2.36;False;1;FLOAT;0
-Node;AmplifyShaderEditor.StepOpNode;125;-384,256;Inherit;True;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.RangedFloatNode;126;-128,384;Inherit;False;Property;_InvertFade;Invert Fade;14;1;[IntRange];Create;True;0;0;0;False;0;False;1;0;0;1;0;1;FLOAT;0
-Node;AmplifyShaderEditor.OneMinusNode;137;224,576;Inherit;False;1;0;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.OneMinusNode;127;224,144;Inherit;False;1;0;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.LerpOp;136;400,512;Inherit;True;3;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.LerpOp;128;400,112;Inherit;True;3;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.RegisterLocalVarNode;138;672.5073,562.1915;Inherit;False;emissionAlpha;-1;True;1;0;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.RegisterLocalVarNode;129;720,144;Inherit;False;alpha;-1;True;1;0;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.ColorNode;20;896,-192;Inherit;False;Property;_Emission;Emission;2;1;[HDR];Create;True;0;0;0;False;0;False;1,1,1,0;4.287094,0,0.02244582,0;True;True;0;6;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4;FLOAT3;5
-Node;AmplifyShaderEditor.GetLocalVarNode;87;912,288;Inherit;True;138;emissionAlpha;1;0;OBJECT;;False;1;FLOAT;0
-Node;AmplifyShaderEditor.LerpOp;22;1136,0;Inherit;True;3;0;COLOR;0,0,0,0;False;1;COLOR;0,0,0,0;False;2;FLOAT;0;False;1;COLOR;0
-Node;AmplifyShaderEditor.GetLocalVarNode;85;1184,464;Inherit;False;129;alpha;1;0;OBJECT;;False;1;FLOAT;0
-Node;AmplifyShaderEditor.RangedFloatNode;108;1296,560;Inherit;False;Property;_EmissionOnly;Emission Only;3;1;[IntRange];Create;True;0;0;0;False;0;False;0;0;0;1;0;1;FLOAT;0
-Node;AmplifyShaderEditor.SimpleMultiplyOpNode;106;1376,256;Inherit;True;2;2;0;COLOR;0,0,0,0;False;1;FLOAT;1;False;1;COLOR;0
-Node;AmplifyShaderEditor.GetLocalVarNode;42;1648,-128;Inherit;False;40;Normal;1;0;OBJECT;;False;1;FLOAT3;0
-Node;AmplifyShaderEditor.GetLocalVarNode;61;1648,-48;Inherit;False;59;metal;1;0;OBJECT;;False;1;FLOAT;0
-Node;AmplifyShaderEditor.GetLocalVarNode;60;1424,-320;Inherit;False;56;Albedo;1;0;OBJECT;;False;1;COLOR;0
-Node;AmplifyShaderEditor.ColorNode;92;1376,-560;Inherit;False;Property;_Tint;Tint;1;0;Create;True;0;0;0;False;0;False;1,1,1,0;1,1,1,0;True;True;0;6;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4;FLOAT3;5
-Node;AmplifyShaderEditor.SimpleMultiplyOpNode;91;1696,-416;Inherit;False;2;2;0;COLOR;0,0,0,0;False;1;COLOR;0,0,0,0;False;1;COLOR;0
-Node;AmplifyShaderEditor.SimpleMultiplyOpNode;41;1920,1888;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.SimpleMultiplyOpNode;43;2176,2400;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.RangedFloatNode;45;1808,2576;Inherit;False;Property;_FlipSmooth;Flip Smooth;7;1;[IntRange];Create;True;0;0;0;False;0;False;1;1;0;1;0;1;FLOAT;0
-Node;AmplifyShaderEditor.OneMinusNode;46;1920,2144;Inherit;False;1;0;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.LerpOp;47;2160,2064;Inherit;False;3;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.SimpleMultiplyOpNode;48;2368,2032;Inherit;False;3;3;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.SaturateNode;49;2528,1952;Inherit;False;1;0;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.RangedFloatNode;50;2160,2208;Inherit;False;Property;_SmoothTweak;Smooth Tweak;8;0;Create;True;0;0;0;False;0;False;1;0;0;0;0;1;FLOAT;0
-Node;AmplifyShaderEditor.SamplerNode;52;1408,2272;Inherit;True;Property;_AO;AO;10;0;Create;True;0;0;0;False;0;False;-1;None;None;True;0;False;white;Auto;False;Object;-1;Auto;Texture2D;8;0;SAMPLER2D;;False;1;FLOAT2;0,0;False;2;FLOAT;0;False;3;FLOAT2;0,0;False;4;FLOAT2;0,0;False;5;FLOAT;1;False;6;FLOAT;0;False;7;SAMPLERSTATE;;False;6;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4;FLOAT3;5
-Node;AmplifyShaderEditor.SamplerNode;53;1408,2016;Inherit;True;Property;_Mask;Mask;6;0;Create;True;0;0;0;False;0;False;-1;None;None;True;0;False;white;Auto;False;Object;-1;Auto;Texture2D;8;0;SAMPLER2D;;False;1;FLOAT2;0,0;False;2;FLOAT;0;False;3;FLOAT2;0,0;False;4;FLOAT2;0,0;False;5;FLOAT;1;False;6;FLOAT;0;False;7;SAMPLERSTATE;;False;6;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4;FLOAT3;5
-Node;AmplifyShaderEditor.SamplerNode;54;1408,1760;Inherit;True;Property;_Metallic;Metallic;9;0;Create;True;0;0;0;False;0;False;-1;None;None;True;0;False;white;Auto;False;Object;-1;Auto;Texture2D;8;0;SAMPLER2D;;False;1;FLOAT2;0,0;False;2;FLOAT;0;False;3;FLOAT2;0,0;False;4;FLOAT2;0,0;False;5;FLOAT;1;False;6;FLOAT;0;False;7;SAMPLERSTATE;;False;6;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4;FLOAT3;5
-Node;AmplifyShaderEditor.SamplerNode;55;1408,1536;Inherit;True;Property;_Albedo1;Albedo;0;0;Create;True;0;0;0;False;0;False;-1;None;None;True;0;False;white;Auto;False;Object;-1;Auto;Texture2D;8;0;SAMPLER2D;;False;1;FLOAT2;0,0;False;2;FLOAT;0;False;3;FLOAT2;0,0;False;4;FLOAT2;0,0;False;5;FLOAT;1;False;6;FLOAT;0;False;7;SAMPLERSTATE;;False;6;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4;FLOAT3;5
-Node;AmplifyShaderEditor.RegisterLocalVarNode;56;1760,1584;Inherit;False;Albedo;-1;True;1;0;COLOR;0,0,0,0;False;1;COLOR;0
-Node;AmplifyShaderEditor.RegisterLocalVarNode;57;2384,2448;Inherit;False;ao;-1;True;1;0;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.RegisterLocalVarNode;58;2720,1968;Inherit;False;Smooth;-1;True;1;0;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.RegisterLocalVarNode;59;2176,1840;Inherit;False;metal;-1;True;1;0;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.RegisterLocalVarNode;40;2272,2736;Inherit;False;Normal;-1;True;1;0;FLOAT3;0,0,0;False;1;FLOAT3;0
-Node;AmplifyShaderEditor.LerpOp;38;2048,2688;Inherit;False;3;0;FLOAT3;0,0,0;False;1;FLOAT3;0,0,0;False;2;FLOAT;0;False;1;FLOAT3;0
-Node;AmplifyShaderEditor.FlipNode;39;1760,2800;Inherit;True;False;True;False;True;1;0;FLOAT3;0,0,0;False;1;FLOAT3;0
-Node;AmplifyShaderEditor.RangedFloatNode;44;1728,2992;Inherit;False;Property;_FlipNormal;Flip Normal;5;1;[IntRange];Create;True;0;0;0;False;0;False;0;0;0;1;0;1;FLOAT;0
-Node;AmplifyShaderEditor.SamplerNode;51;1408,2688;Inherit;True;Property;_Normal;Normal;4;0;Create;True;0;0;0;False;0;False;-1;None;None;True;0;True;bump;Auto;True;Object;-1;Auto;Texture2D;8;0;SAMPLER2D;;False;1;FLOAT2;0,0;False;2;FLOAT;0;False;3;FLOAT2;0,0;False;4;FLOAT2;0,0;False;5;FLOAT;1;False;6;FLOAT;0;False;7;SAMPLERSTATE;;False;6;FLOAT3;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4;FLOAT3;5
-Node;AmplifyShaderEditor.RangedFloatNode;82;1520,160;Inherit;False;Property;_AlphaClip;AlphaClip;17;0;Create;True;0;0;0;False;0;False;0.1;0.1;0.1;0.5;0;1;FLOAT;0
-Node;AmplifyShaderEditor.LerpOp;107;1664,256;Inherit;False;3;0;COLOR;0,0,0,0;False;1;COLOR;0,0,0,0;False;2;FLOAT;0;False;1;COLOR;0
-Node;AmplifyShaderEditor.GetLocalVarNode;63;1664,480;Inherit;False;57;ao;1;0;OBJECT;;False;1;FLOAT;0
-Node;AmplifyShaderEditor.GetLocalVarNode;62;1664,400;Inherit;False;58;Smooth;1;0;OBJECT;;False;1;FLOAT;0
+Node;AmplifyShaderEditor.PosVertexDataNode;18;-2352,-48;Inherit;False;0;0;5;FLOAT3;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
+Node;AmplifyShaderEditor.Vector3Node;71;-2352,-192;Inherit;False;Property;_FadeDirection;Fade Direction;3;0;Create;True;0;0;0;False;0;False;0,1,0;0,1,0;0;4;FLOAT3;0;FLOAT;1;FLOAT;2;FLOAT;3
+Node;AmplifyShaderEditor.RangedFloatNode;79;-2336,528;Inherit;False;Property;_ObjectHeightAdjust;Object Height Adjust;5;0;Create;True;0;0;0;False;0;False;0;0;0;0;0;1;FLOAT;0
+Node;AmplifyShaderEditor.SimpleMultiplyOpNode;66;-2128,-112;Inherit;True;2;2;0;FLOAT3;-1,0,0;False;1;FLOAT3;0,0,0;False;1;FLOAT3;0
+Node;AmplifyShaderEditor.SimpleAddOpNode;76;-1968,528;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;2;False;1;FLOAT;0
+Node;AmplifyShaderEditor.RangedFloatNode;72;-2352,128;Inherit;False;Property;_FadeShift;Fade Shift;1;1;[Header];Create;True;1;Fade Controlls;0;0;False;0;False;0.1812099;0.443;0;1;0;1;FLOAT;0
+Node;AmplifyShaderEditor.RangedFloatNode;77;-2288,656;Inherit;False;Property;_FadeBlur;Fade Blur;2;0;Create;True;0;0;0;False;0;False;0.01;2.89;0.01;5;0;1;FLOAT;0
+Node;AmplifyShaderEditor.DotProductOpNode;69;-1888,-112;Inherit;True;2;0;FLOAT3;0,0,0;False;1;FLOAT3;1,1,1;False;1;FLOAT;0
+Node;AmplifyShaderEditor.TFHCRemapNode;73;-1776,144;Inherit;False;5;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;1;False;3;FLOAT;-1;False;4;FLOAT;2;False;1;FLOAT;0
+Node;AmplifyShaderEditor.WireNode;98;-1568,336;Inherit;False;1;0;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SimpleAddOpNode;65;-1584,-112;Inherit;True;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.RangedFloatNode;94;-1280,-384;Inherit;False;Property;_NoiseTurbulence;Noise Turbulence;7;0;Create;True;0;0;0;False;0;False;3;3;0;0;0;1;FLOAT;0
+Node;AmplifyShaderEditor.RangedFloatNode;102;-1040,-432;Inherit;False;Property;_TurbulenceTweak;Turbulence Tweak;8;0;Create;True;0;0;0;False;0;False;0;0;0;0;0;1;FLOAT;0
+Node;AmplifyShaderEditor.TextureCoordinatesNode;6;-1280,-256;Inherit;False;0;-1;2;3;2;SAMPLER2D;;False;0;FLOAT2;2,1;False;1;FLOAT2;0,0;False;5;FLOAT2;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
+Node;AmplifyShaderEditor.SimpleDivideOpNode;75;-1360,112;Inherit;True;2;0;FLOAT;0;False;1;FLOAT;2.36;False;1;FLOAT;0
+Node;AmplifyShaderEditor.NoiseGeneratorNode;93;-1024,-288;Inherit;True;Simplex2D;True;False;2;0;FLOAT2;0,0;False;1;FLOAT;1;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SimpleAddOpNode;101;-734.9358,-159.0456;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SimpleMultiplyOpNode;95;-688,-368;Inherit;True;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.RegisterLocalVarNode;99;-448.2002,-322.9692;Inherit;False;noiseTurb;-1;True;1;0;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.RangedFloatNode;9;-1296,-48;Inherit;False;Property;_NoiseScale;Noise Scale;6;0;Create;True;0;0;0;False;0;False;50;80;0;0;0;1;FLOAT;0
+Node;AmplifyShaderEditor.GetLocalVarNode;100;-1584,432;Inherit;False;99;noiseTurb;1;0;OBJECT;;False;1;FLOAT;0
+Node;AmplifyShaderEditor.Vector2Node;111;-1136,208;Inherit;False;Constant;_OverlapRefactor;Overlap Refactor;9;0;Create;True;0;0;0;False;0;False;0,1;0.1,1.1;0;3;FLOAT2;0;FLOAT;1;FLOAT;2
+Node;AmplifyShaderEditor.RangedFloatNode;113;-1152,336;Inherit;False;Property;_Overlap;Overlap;9;0;Create;True;0;0;0;False;0;False;0;-0.16;0;0;0;1;FLOAT;0
+Node;AmplifyShaderEditor.NoiseGeneratorNode;7;-1024,-48;Inherit;True;Simplex2D;True;False;2;0;FLOAT2;0,0;False;1;FLOAT;1;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SimpleAddOpNode;96;-1360,384;Inherit;True;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SimpleAddOpNode;115;-880,320;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SimpleAddOpNode;114;-912,208;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SmoothstepOpNode;110;-752,16;Inherit;False;3;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;1;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SaturateNode;97;-864,432;Inherit;False;1;0;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SimpleMultiplyOpNode;88;-560,112;Inherit;True;3;3;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SmoothstepOpNode;117;-208,160;Inherit;False;3;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;0.17;False;1;FLOAT;0
+Node;AmplifyShaderEditor.RangedFloatNode;105;96,-224;Inherit;False;Property;_InvertFade;Invert Fade;4;1;[IntRange];Create;True;0;0;0;False;0;False;0;0;0;1;0;1;FLOAT;0
+Node;AmplifyShaderEditor.SaturateNode;90;-48,-128;Inherit;True;1;0;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.LerpOp;104;400,-128;Inherit;True;3;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.RegisterLocalVarNode;86;640,0;Inherit;True;edgeBlur;-1;True;1;0;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.ColorNode;20;896,-192;Inherit;False;Property;_Emission;Emission;0;1;[HDR];Create;True;0;0;0;False;0;False;1,1,1,0;2,0.1069181,0.1069181,0;True;True;0;6;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4;FLOAT3;5
+Node;AmplifyShaderEditor.GetLocalVarNode;87;896,384;Inherit;True;86;edgeBlur;1;0;OBJECT;;False;1;FLOAT;0
+Node;AmplifyShaderEditor.LerpOp;22;1152,0;Inherit;True;3;0;COLOR;0,0,0,0;False;1;COLOR;0,0,0,0;False;2;FLOAT;0;False;1;COLOR;0
+Node;AmplifyShaderEditor.SimpleMultiplyOpNode;106;1376,256;Inherit;True;2;2;0;COLOR;0,0,0,0;False;1;FLOAT;0;False;1;COLOR;0
+Node;AmplifyShaderEditor.OneMinusNode;103;176,-16;Inherit;True;1;0;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SimpleAddOpNode;89;-304,-128;Inherit;True;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.RegisterLocalVarNode;84;640,-128;Inherit;False;Alpha;-1;True;1;0;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.RangedFloatNode;82;1504,128;Inherit;False;Property;_AlphaClip;AlphaClip;10;0;Create;True;0;0;0;False;0;False;0.1;0.1;0.1;0.5;0;1;FLOAT;0
+Node;AmplifyShaderEditor.SaturateNode;112;1600,240;Inherit;True;1;0;COLOR;0,0,0,0;False;1;COLOR;0
+Node;AmplifyShaderEditor.NegateNode;116;176,208;Inherit;True;1;0;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;27;1904,-16;Float;False;False;-1;2;UnityEditor.ShaderGraphLitGUI;0;1;New Amplify Shader;94348b07e5e8bab40bd6c8a1e3df54cd;True;ExtraPrePass;0;0;ExtraPrePass;5;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;True;1;1;False;;0;False;;0;1;False;;0;False;;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;True;True;True;True;0;False;;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;0;False;False;0;;0;0;Standard;0;False;0
-Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;28;1904,-16;Float;False;True;-1;2;UnityEditor.ShaderGraphLitGUI;0;12;Object_SpawnIn;94348b07e5e8bab40bd6c8a1e3df54cd;True;Forward;0;1;Forward;21;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;True;1;1;False;;0;False;;1;1;False;;0;False;;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;True;True;True;True;0;False;;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;1;LightMode=UniversalForward;False;False;0;;0;0;Standard;42;Lighting Model;0;0;Workflow;1;0;Surface;0;0;  Refraction Model;0;0;  Blend;0;0;Two Sided;1;0;Fragment Normal Space,InvertActionOnDeselection;0;0;Forward Only;0;0;Transmission;0;0;  Transmission Shadow;0.5,False,;0;Translucency;0;0;  Translucency Strength;1,False,;0;  Normal Distortion;0.5,False,;0;  Scattering;2,False,;0;  Direct;0.9,False,;0;  Ambient;0.1,False,;0;  Shadow;0.5,False,;0;Cast Shadows;1;0;  Use Shadow Threshold;0;0;Receive Shadows;1;0;Receive SSAO;1;0;GPU Instancing;1;0;LOD CrossFade;1;0;Built-in Fog;1;0;_FinalColorxAlpha;0;0;Meta Pass;1;0;Override Baked GI;0;0;Extra Pre Pass;0;0;Tessellation;0;0;  Phong;0;0;  Strength;0.5,False,;0;  Type;0;0;  Tess;16,False,;0;  Min;10,False,;0;  Max;25,False,;0;  Edge Length;16,False,;0;  Max Displacement;25,False,;0;Write Depth;0;0;  Early Z;0;0;Vertex Position,InvertActionOnDeselection;1;0;Debug Display;0;0;Clear Coat;0;0;0;10;False;True;True;True;True;True;True;True;True;True;False;;False;0
+Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;28;1904,-16;Float;False;True;-1;2;UnityEditor.ShaderGraphLitGUI;0;12;EmissionOnly_SpawnInOLD;94348b07e5e8bab40bd6c8a1e3df54cd;True;Forward;0;1;Forward;21;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;True;1;1;False;;0;False;;1;1;False;;0;False;;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;True;True;True;True;0;False;;False;False;False;False;False;False;True;True;False;0;False;;255;False;;255;False;;7;False;;3;False;;3;False;;3;False;;0;False;;0;False;;0;False;;0;False;;True;True;2;False;;True;3;False;;True;True;0;False;;0;False;;True;1;LightMode=UniversalForward;False;False;0;;0;0;Standard;42;Lighting Model;0;0;Workflow;1;0;Surface;0;0;  Refraction Model;0;0;  Blend;0;0;Two Sided;1;0;Fragment Normal Space,InvertActionOnDeselection;0;0;Forward Only;0;0;Transmission;0;0;  Transmission Shadow;0.5,False,;0;Translucency;0;0;  Translucency Strength;1,False,;0;  Normal Distortion;0.5,False,;0;  Scattering;2,False,;0;  Direct;0.9,False,;0;  Ambient;0.1,False,;0;  Shadow;0.5,False,;0;Cast Shadows;1;0;  Use Shadow Threshold;0;0;Receive Shadows;1;0;Receive SSAO;1;0;GPU Instancing;1;0;LOD CrossFade;1;0;Built-in Fog;1;0;_FinalColorxAlpha;0;0;Meta Pass;1;0;Override Baked GI;0;0;Extra Pre Pass;0;0;Tessellation;0;0;  Phong;0;0;  Strength;0.5,False,;0;  Type;0;0;  Tess;16,False,;0;  Min;10,False,;0;  Max;25,False,;0;  Edge Length;16,False,;0;  Max Displacement;25,False,;0;Write Depth;0;0;  Early Z;0;0;Vertex Position,InvertActionOnDeselection;1;0;Debug Display;0;0;Clear Coat;0;0;0;10;False;True;True;True;True;True;True;True;True;True;False;;False;0
 Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;29;1904,-16;Float;False;False;-1;2;UnityEditor.ShaderGraphLitGUI;0;1;New Amplify Shader;94348b07e5e8bab40bd6c8a1e3df54cd;True;ShadowCaster;0;2;ShadowCaster;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;False;False;True;False;False;False;False;0;False;;False;False;False;False;False;False;False;False;False;True;1;False;;True;3;False;;False;True;1;LightMode=ShadowCaster;False;False;0;;0;0;Standard;0;False;0
 Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;30;1904,-16;Float;False;False;-1;2;UnityEditor.ShaderGraphLitGUI;0;1;New Amplify Shader;94348b07e5e8bab40bd6c8a1e3df54cd;True;DepthOnly;0;3;DepthOnly;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;False;False;True;True;False;False;False;0;False;;False;False;False;False;False;False;False;False;False;True;1;False;;False;False;True;1;LightMode=DepthOnly;False;False;0;;0;0;Standard;0;False;0
 Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;31;1904,-16;Float;False;False;-1;2;UnityEditor.ShaderGraphLitGUI;0;1;New Amplify Shader;94348b07e5e8bab40bd6c8a1e3df54cd;True;Meta;0;4;Meta;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;2;False;;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;1;LightMode=Meta;False;False;0;;0;0;Standard;0;False;0
-Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;32;1904,-16;Float;False;False;-1;2;UnityEditor.ShaderGraphLitGUI;0;1;New Amplify Shader;94348b07e5e8bab40bd6c8a1e3df54cd;True;Universal2D;0;5;Universal2D;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;True;1;1;False;;0;False;;1;1;False;;0;False;;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;True;True;True;True;0;False;;False;False;False;False;False;False;False;False;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;1;LightMode=Universal2D;False;False;0;;0;0;Standard;0;False;0
+Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;32;1904,-16;Float;False;False;-1;2;UnityEditor.ShaderGraphLitGUI;0;1;New Amplify Shader;94348b07e5e8bab40bd6c8a1e3df54cd;True;Universal2D;0;5;Universal2D;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;True;1;1;False;;0;False;;1;1;False;;0;False;;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;True;True;True;True;0;False;;False;False;False;False;False;False;False;False;False;True;2;False;;True;3;False;;True;True;0;False;;0;False;;True;1;LightMode=Universal2D;False;False;0;;0;0;Standard;0;False;0
 Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;33;1904,-16;Float;False;False;-1;2;UnityEditor.ShaderGraphLitGUI;0;1;New Amplify Shader;94348b07e5e8bab40bd6c8a1e3df54cd;True;DepthNormals;0;6;DepthNormals;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;True;1;1;False;;0;False;;0;1;False;;0;False;;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;1;False;;True;3;False;;False;True;1;LightMode=DepthNormals;False;False;0;;0;0;Standard;0;False;0
-Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;34;1904,-16;Float;False;False;-1;2;UnityEditor.ShaderGraphLitGUI;0;1;New Amplify Shader;94348b07e5e8bab40bd6c8a1e3df54cd;True;GBuffer;0;7;GBuffer;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;True;1;1;False;;0;False;;1;1;False;;0;False;;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;True;True;True;True;0;False;;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;1;LightMode=UniversalGBuffer;False;False;0;;0;0;Standard;0;False;0
+Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;34;1904,-16;Float;False;False;-1;2;UnityEditor.ShaderGraphLitGUI;0;1;New Amplify Shader;94348b07e5e8bab40bd6c8a1e3df54cd;True;GBuffer;0;7;GBuffer;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;True;1;1;False;;0;False;;1;1;False;;0;False;;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;True;True;True;True;0;False;;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;7;False;;3;False;;3;False;;3;False;;0;False;;0;False;;0;False;;0;False;;False;True;2;False;;True;3;False;;True;True;0;False;;0;False;;True;1;LightMode=UniversalGBuffer;False;False;0;;0;0;Standard;0;False;0
 Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;35;1904,-16;Float;False;False;-1;2;UnityEditor.ShaderGraphLitGUI;0;1;New Amplify Shader;94348b07e5e8bab40bd6c8a1e3df54cd;True;SceneSelectionPass;0;8;SceneSelectionPass;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;2;False;;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;1;LightMode=SceneSelectionPass;False;False;0;;0;0;Standard;0;False;0
 Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;36;1904,-16;Float;False;False;-1;2;UnityEditor.ShaderGraphLitGUI;0;1;New Amplify Shader;94348b07e5e8bab40bd6c8a1e3df54cd;True;ScenePickingPass;0;9;ScenePickingPass;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;1;LightMode=Picking;False;False;0;;0;0;Standard;0;False;0
-WireConnection;115;1;111;0
-WireConnection;114;0;110;0
-WireConnection;114;1;109;0
-WireConnection;116;0;112;0
-WireConnection;116;2;111;0
-WireConnection;132;0;115;0
-WireConnection;132;1;133;0
-WireConnection;118;0;114;0
-WireConnection;131;0;113;0
-WireConnection;131;3;132;0
-WireConnection;131;4;116;0
-WireConnection;117;0;113;0
-WireConnection;117;3;115;0
-WireConnection;117;4;116;0
-WireConnection;134;0;118;0
-WireConnection;134;1;131;0
-WireConnection;124;0;121;0
-WireConnection;124;1;143;2
-WireConnection;142;0;121;0
-WireConnection;142;1;143;1
-WireConnection;119;0;118;0
-WireConnection;119;1;117;0
-WireConnection;141;0;134;0
-WireConnection;141;1;120;0
-WireConnection;144;0;142;0
-WireConnection;144;1;124;0
-WireConnection;135;0;144;0
-WireConnection;135;1;141;0
-WireConnection;123;0;119;0
-WireConnection;123;1;120;0
-WireConnection;125;0;144;0
-WireConnection;125;1;123;0
-WireConnection;137;0;135;0
-WireConnection;127;0;125;0
-WireConnection;136;0;125;0
-WireConnection;136;1;137;0
-WireConnection;136;2;126;0
-WireConnection;128;0;125;0
-WireConnection;128;1;127;0
-WireConnection;128;2;126;0
-WireConnection;138;0;136;0
-WireConnection;129;0;128;0
+WireConnection;66;0;71;0
+WireConnection;66;1;18;0
+WireConnection;76;0;79;0
+WireConnection;69;0;66;0
+WireConnection;73;0;72;0
+WireConnection;73;4;76;0
+WireConnection;98;0;77;0
+WireConnection;65;0;69;0
+WireConnection;65;1;73;0
+WireConnection;75;0;65;0
+WireConnection;75;1;98;0
+WireConnection;93;0;6;0
+WireConnection;93;1;94;0
+WireConnection;101;0;75;0
+WireConnection;101;1;102;0
+WireConnection;95;0;93;0
+WireConnection;95;1;101;0
+WireConnection;99;0;95;0
+WireConnection;7;0;6;0
+WireConnection;7;1;9;0
+WireConnection;96;0;100;0
+WireConnection;96;1;65;0
+WireConnection;115;0;111;2
+WireConnection;115;1;113;0
+WireConnection;114;0;111;1
+WireConnection;114;1;113;0
+WireConnection;110;0;7;0
+WireConnection;110;1;114;0
+WireConnection;110;2;115;0
+WireConnection;97;0;96;0
+WireConnection;88;0;75;0
+WireConnection;88;1;110;0
+WireConnection;88;2;97;0
+WireConnection;117;0;88;0
+WireConnection;90;0;117;0
+WireConnection;104;0;90;0
+WireConnection;104;2;105;0
+WireConnection;86;0;104;0
 WireConnection;22;0;20;0
 WireConnection;22;2;87;0
 WireConnection;106;0;22;0
-WireConnection;106;1;85;0
-WireConnection;91;0;92;0
-WireConnection;91;1;60;0
-WireConnection;41;0;53;3
-WireConnection;41;1;54;1
-WireConnection;43;0;53;1
-WireConnection;43;1;52;1
-WireConnection;46;0;53;2
-WireConnection;47;0;53;2
-WireConnection;47;1;46;0
-WireConnection;47;2;45;0
-WireConnection;48;0;54;1
-WireConnection;48;1;47;0
-WireConnection;48;2;50;0
-WireConnection;49;0;48;0
-WireConnection;56;0;55;0
-WireConnection;57;0;43;0
-WireConnection;58;0;49;0
-WireConnection;59;0;41;0
-WireConnection;40;0;38;0
-WireConnection;38;0;51;0
-WireConnection;38;1;39;0
-WireConnection;38;2;44;0
-WireConnection;39;0;51;0
-WireConnection;107;0;85;0
-WireConnection;107;1;106;0
-WireConnection;107;2;108;0
-WireConnection;28;0;91;0
-WireConnection;28;1;42;0
+WireConnection;106;1;87;0
+WireConnection;103;0;90;0
+WireConnection;89;0;88;0
+WireConnection;89;1;65;0
+WireConnection;84;0;104;0
+WireConnection;112;0;106;0
+WireConnection;116;0;90;0
+WireConnection;28;0;22;0
 WireConnection;28;2;22;0
-WireConnection;28;3;61;0
-WireConnection;28;4;62;0
-WireConnection;28;5;63;0
-WireConnection;28;6;107;0
+WireConnection;28;6;112;0
 WireConnection;28;7;82;0
 ASEEND*/
-//CHKSM=E8EAA0141566968A0779B650363895FBCE09F857
+//CHKSM=05D5861E0C41B9CF815595FC4F9CF1444DBE83A5

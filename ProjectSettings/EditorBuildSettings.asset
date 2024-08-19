@@ -59,12 +59,15 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Samples/LightEstimation/LightEstimation.unity
     guid: 3686832fdd0592646af55cad944f47cf
-  - enabled: 1
+  - enabled: 0
     path: Assets/Samples/arPortal/arPortal.unity
     guid: 03878e84a7d6bba46a68cc4eae99c7dc
   - enabled: 0
     path: Assets/Samples/sharedVPS/sharedVPS.unity
     guid: b2e5534a2c5935a48a28c2d95facb557
+  - enabled: 1
+    path: Assets/Sugar/BuildInStuff/DepthTesting.unity
+    guid: f65e264acf7c80e4c82c59fb10029e33
   m_configObjects:
     Niantic.Lightship.AR.LightshipSettings: {fileID: 11400000, guid: 05b0489c7d3114fe3b5a5321c06a66dd, type: 2}
     Niantic.Lightship.AR.WPSSettings: {fileID: 11400000, guid: ee6baa83fec89444b99181fc1ccffc2a, type: 2}
