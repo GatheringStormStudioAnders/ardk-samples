@@ -21,6 +21,10 @@ namespace Sugar.CollectionSystem
                 if (!requiredItems.Contains(collectable))
                 {
                     requiredItems.Add(collectable);
+                    if(requiredItems.Count >= 7)
+                    {
+                        ui.completeGameUI.SetActive(true);
+                    }
                 }
 
                 ui.OpenItemInfo(collectable.data);

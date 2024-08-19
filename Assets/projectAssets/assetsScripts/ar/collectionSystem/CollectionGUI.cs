@@ -11,6 +11,7 @@ namespace Sugar.UI
     public class CollectionGUI : MonoBehaviour
     {
         public CollectionManager collectionManager;
+        public GameObject completeGameUI;
         #region Info Panel
         [Header("Info Panel UI")]
         public GameObject itemInfoPanel;
