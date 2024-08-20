@@ -6980,9 +6980,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   planePlacement:
-    aRRaycastManager: {fileID: 0}
-    arCamera: {fileID: 0}
-    planeManager: {fileID: 0}
+    aRRaycastManager: {fileID: 627991772}
+    arCamera: {fileID: 687608270}
+    planeManager: {fileID: 627991773}
     lastValidPlacementPose:
       position: {x: 0, y: 0, z: 0}
       rotation: {x: 0, y: 0, z: 0, w: 0}
@@ -22882,7 +22882,7 @@ MonoBehaviour:
           m_BoolArgument: 1
         m_CallState: 2
   depthDissolve: {fileID: 2100000, guid: b95fec2acc09658459e264099d908507, type: 2}
-  emissionDissolve: {fileID: 2100000, guid: 976c2c9b602efe6489f44574bfb582c8, type: 2}
+  emissionDissolve: {fileID: 2100000, guid: bd93ab4dafbcce945b3d40a289559fab, type: 2}
   dissolveTime: 10
   dampingSpeed: 50
   target: {fileID: 687608265}
@@ -25230,13 +25230,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7559161294668749712}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 4425418424447569230}
-  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 180}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &7184211872833843028
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -26119,7 +26119,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 976c2c9b602efe6489f44574bfb582c8, type: 2}
+  - {fileID: 2100000, guid: bd93ab4dafbcce945b3d40a289559fab, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

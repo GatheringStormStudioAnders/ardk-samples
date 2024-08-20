@@ -14,4 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: Tricorn Hat
   itemIcon: {fileID: 21300000, guid: cc1b8195c43751042b97381bf447c8dd, type: 3}
-  description: This is a Tricorn Hat.
+  description: Perhaps one of the most iconic, and easily recognized, pieces of clothing
+    from the colonial era is the tri-corner hat, or more simply known as the tricorn.
+    Although the style originated in Europe, it is now associated with the American
+    Revolutionary War and the nation's fight for freedom.

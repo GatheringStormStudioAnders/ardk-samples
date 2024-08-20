@@ -14,4 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: Powder Horn
   itemIcon: {fileID: 21300000, guid: 60317c2c8b6243841b0371b1fdd09292, type: 3}
-  description: This is a Powder Horn.
+  description: A Militia soldier needed two powder horns. The larger for containing
+    the coarse powder for the main charge in the musket and the smaller to hold the
+    more finely ground power that was used in the priming pan. These horns were made
+    from real horns that were often obtained from domestic cattle.

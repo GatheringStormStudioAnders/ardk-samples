@@ -14,4 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: Canteen
   itemIcon: {fileID: 21300000, guid: a38cc2eca70368f4d9018bb5c0f0cd52, type: 3}
-  description: This is a Canteen.
+  description: A canteen of wood, tin, or glass to carry water was vital for a Militia
+    soldier. The average for a march was between 8 and 13 miles per day and the capacity
+    of the canteen was around 1.4 litres, this would have to last the man for an
+    entire day unless they were lucky enough to find somewhere to refill it.

@@ -14,4 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: Worm
   itemIcon: {fileID: 21300000, guid: 17cd0968031bbe244a9e1414cd57e3da, type: 3}
-  description: This is a Worm.
+  description: The Worm was the name given to a corkscrew-shaped piece of metal which
+    was used to extract any residual debris from the barrel of the soldiers musket
+    when cleaning it. Every soldier had to carry this so that they could keep the
+    musket ready to use.

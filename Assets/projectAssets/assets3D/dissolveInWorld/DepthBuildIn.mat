@@ -21,17 +21,17 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: DepthBuildIn
-  m_Shader: {fileID: 4800000, guid: 35cde21ab059cc542b1f9fe562d8f049, type: 3}
+  m_Shader: {fileID: 4800000, guid: bbf68418f55b9ce478cfa9efc23b589d, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords: []
+  m_ValidKeywords:
+  - _RECEIVE_SHADOWS_OFF
   m_InvalidKeywords:
   - _RECEIVESHADOWS_OFF
-  - _RECEIVE_SHADOWS_OFF
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 2000
+  m_CustomRenderQueue: 1991
   stringTagMap: {}
   disabledShaderPasses: []
   m_LockedProperties: 
@@ -111,20 +111,21 @@ Material:
     - _DstBlend: 0
     - _DstBlendAlpha: 0
     - _EnvironmentReflections: 1
-    - _FadeBlur: 0.01
+    - _FadeBlur: 0.7
     - _FadeShift: 1
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
-    - _InvertFade: 0
+    - _InvertFade: 1
     - _Metallic: 0
     - _NoiseScale: 80
-    - _NoiseTurbulence: 3
+    - _NoiseTurbulence: 0.2
     - _ObjectHeightAdjust: 0
     - _OcclusionStrength: 1
+    - _Overlap: 0
     - _Parallax: 0.005
     - _QueueControl: 0
-    - _QueueOffset: 0
+    - _QueueOffset: -9
     - _ReceiveShadows: 0
     - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
@@ -138,7 +139,10 @@ Material:
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Emission: {r: 1, g: 1, b: 1, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _FadeDirection: {r: 0, g: 0, b: -1, a: 0}
+    - _NoiseScales: {r: 50, g: 5, b: 0, a: 0}
+    - _ObjectMinMaxAdjust: {r: 0, g: 0, b: 0, a: 0}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []

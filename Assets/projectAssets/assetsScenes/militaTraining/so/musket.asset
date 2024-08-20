@@ -14,4 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: Musket
   itemIcon: {fileID: 21300000, guid: 0b260c3d4585c5f40bc6427c9695772e, type: 3}
-  description: This is a Musket.
+  description: The most common weapon during the American Revolution was the musket
+    - a long smoothbore gun (a gun without grooves inside its barrel) that was fired
+    from the shoulder. These weapons were slow and complicated to load and were extremely
+    inaccurate, normally only fired in volleys.
