@@ -63,5 +63,14 @@ namespace Sugar.UI
         }
 
         #endregion
+
+        #region Complete Training UI
+        public Button closeItemPrompt;
+        public void CompleteTraining()
+        {
+            completeGameUI.SetActive(true);
+        }
+
+        #endregion
     }
 }

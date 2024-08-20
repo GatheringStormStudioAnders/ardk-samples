@@ -364,6 +364,10 @@ PrefabInstance:
       propertyPath: GlobalObjectIdHash
       value: 4096267113
       objectReference: {fileID: 0}
+    - target: {fileID: 2690645218887992570, guid: f4e30e635d9aea64eb3d1979b820321e, type: 3}
+      propertyPath: outlineLimits.y
+      value: 0.005
+      objectReference: {fileID: 0}
     - target: {fileID: 4066054172239762230, guid: f4e30e635d9aea64eb3d1979b820321e, type: 3}
       propertyPath: m_Name
       value: musket
@@ -670,6 +674,10 @@ PrefabInstance:
     - target: {fileID: 7534636658511980466, guid: 0f960891a3b15004993c99d17c1f61c6, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 3658078618
+      objectReference: {fileID: 0}
+    - target: {fileID: 9122975714127052156, guid: 0f960891a3b15004993c99d17c1f61c6, type: 3}
+      propertyPath: outlineLimits.y
+      value: 0.005
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2731,6 +2739,7 @@ Transform:
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1485625651}
+  - {fileID: 1094522701}
   - {fileID: 205083791}
   m_Father: {fileID: 1193583971}
   m_LocalEulerAnglesHint: {x: 0, y: 97.87, z: 0}
@@ -4981,7 +4990,6 @@ GameObject:
   - component: {fileID: 544856462}
   - component: {fileID: 544856461}
   - component: {fileID: 544856460}
-  - component: {fileID: 544856459}
   m_Layer: 5
   m_Name: placementUI
   m_TagString: Untagged
@@ -4989,33 +4997,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &544856459
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 544856458}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a406f44522335e74ea51612d69d12b9a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  collectionManager: {fileID: 1247626549}
-  completeGameUI: {fileID: 0}
-  itemInfoPanel: {fileID: 0}
-  itemName: {fileID: 0}
-  itemDescription: {fileID: 0}
-  icon: {fileID: 0}
-  collectionListPanel: {fileID: 1945342401}
-  collectableUISlots:
-  - {fileID: 158387439}
-  - {fileID: 1599265569}
-  - {fileID: 54414316}
-  - {fileID: 1494317196}
-  - {fileID: 448718922}
-  - {fileID: 963988714}
-  - {fileID: 51502556}
 --- !u!114 &544856460
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6251,116 +6232,31 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   planePlacement:
-    aRRaycastManager: {fileID: 627991772}
-    arCamera: {fileID: 687608270}
-    planeManager: {fileID: 627991773}
+    aRRaycastManager: {fileID: 0}
+    arCamera: {fileID: 0}
+    planeManager: {fileID: 0}
     lastValidPlacementPose:
       position: {x: 0, y: 0, z: 0}
       rotation: {x: 0, y: 0, z: 0, w: 0}
-    indicatorRotationDamping: 10
+    indicatorRotationDamping: 0
   onBeginPlacement:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1702604162}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
+      m_Calls: []
   onObjectPlacement:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 627991773}
-        m_TargetAssemblyTypeName: UnityEngine.Behaviour, UnityEngine
-        m_MethodName: set_enabled
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 627991771}
-        m_TargetAssemblyTypeName: UnityEngine.Behaviour, UnityEngine
-        m_MethodName: set_enabled
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 627991771}
-        m_TargetAssemblyTypeName: Sugar.AR.Placement.PlanePlacementAR, Assembly-CSharp
-        m_MethodName: LockAR
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 627991772}
-        m_TargetAssemblyTypeName: UnityEngine.XR.ARFoundation.ARTrackableManager`5[[UnityEngine.XR.ARSubsystems.XRRaycastSubsystem,
-          Unity.XR.ARSubsystems
-        m_MethodName: SetTrackablesActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 627991772}
-        m_TargetAssemblyTypeName: UnityEngine.Behaviour, UnityEngine
-        m_MethodName: set_enabled
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   onEndPlacement:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1702604162}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  placementIndicator: {fileID: 90661673}
-  arContent: {fileID: 6189159398094288153}
-  placeButton: {fileID: 1702604163}
-  scaleLimits: {x: 0.5, y: 1.5}
+      m_Calls: []
+  placementIndicator: {fileID: 0}
+  arContent: {fileID: 0}
+  placeButton: {fileID: 0}
+  scaleLimits: {x: 0, y: 0}
   debugEditorMode: 0
   isLocked: 0
   autoInit: 0
   initDistance: 0
-  initScale: {x: 1, y: 1, z: 1}
+  initScale: {x: 0, y: 0, z: 0}
 --- !u!114 &627991772
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7098,9 +6994,9 @@ MonoBehaviour:
   onRaycastSuccessful:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1247626549}
-        m_TargetAssemblyTypeName: Sugar.CollectionSystem.CollectionManager, Assembly-CSharp
-        m_MethodName: TryCollectItem
+      - m_Target: {fileID: 8680755306260035862}
+        m_TargetAssemblyTypeName: Sugar.CollectionSystem.CollectionListBoard, Assembly-CSharp
+        m_MethodName: TryAccessBoard
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -7110,9 +7006,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 8680755306260035862}
-        m_TargetAssemblyTypeName: Sugar.CollectionSystem.CollectionListBoard, Assembly-CSharp
-        m_MethodName: TryAccessBoard
+      - m_Target: {fileID: 1247626549}
+        m_TargetAssemblyTypeName: Sugar.CollectionSystem.CollectionManager, Assembly-CSharp
+        m_MethodName: TryCollectItem
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -8319,6 +8215,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: worm
       objectReference: {fileID: 0}
+    - target: {fileID: 4164815297757274010, guid: a4319826f225eec4fad96f52e5430160, type: 3}
+      propertyPath: outlineLimits.y
+      value: 0.005
+      objectReference: {fileID: 0}
     - target: {fileID: 7657998321990490165, guid: a4319826f225eec4fad96f52e5430160, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 3325861920
@@ -9365,6 +9265,10 @@ PrefabInstance:
       propertyPath: GlobalObjectIdHash
       value: 2112357592
       objectReference: {fileID: 0}
+    - target: {fileID: 8044478579685659308, guid: 24b647f689b3e7949b02aa57cc63ef11, type: 3}
+      propertyPath: outlineLimits.y
+      value: 0.005
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -9576,6 +9480,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1607068616}
     m_Modifications:
+    - target: {fileID: 2172165549413234963, guid: c5c279c9495b1e245859bacf5fa42bd0, type: 3}
+      propertyPath: outlineLimits.y
+      value: 0.005
+      objectReference: {fileID: 0}
     - target: {fileID: 3202480247927889504, guid: c5c279c9495b1e245859bacf5fa42bd0, type: 3}
       propertyPath: m_Layer
       value: 16
@@ -10154,6 +10062,89 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 480488, guid: a1176fbe1689ac248ab623f26d0be46b, type: 3}
   m_PrefabInstance: {fileID: 6801529024167703264}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1094522700
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1094522701}
+  - component: {fileID: 1094522703}
+  - component: {fileID: 1094522702}
+  m_Layer: 0
+  m_Name: paperWorldSpace_1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1094522701
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1094522700}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.6584268, y: 0.75264484, z: -0, w: 0}
+  m_LocalPosition: {x: 0.0713, y: 0.0013, z: 0.0127}
+  m_LocalScale: {x: 0.06, y: 0.06, z: 0.0117654}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 318479436}
+  m_LocalEulerAnglesHint: {x: 180, y: 0, z: -97.64}
+--- !u!23 &1094522702
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1094522700}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 2792016280f29c147b6b1e065e55146f, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &1094522703
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1094522700}
+  m_Mesh: {fileID: -462981019419857548, guid: c5fb45ec5e520fa4aa8d4a940b34eb6f, type: 3}
 --- !u!1 &1104906856
 GameObject:
   m_ObjectHideFlags: 0
@@ -10938,6 +10929,10 @@ PrefabInstance:
     - target: {fileID: 7951704207907100541, guid: f938ca0dd9e293b448213127d26e4c72, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 2140205232
+      objectReference: {fileID: 0}
+    - target: {fileID: 8078127141531228721, guid: f938ca0dd9e293b448213127d26e4c72, type: 3}
+      propertyPath: outlineLimits.y
+      value: 0.005
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -12858,6 +12853,7 @@ MonoBehaviour:
   - {fileID: 448718922}
   - {fileID: 963988714}
   - {fileID: 51502556}
+  closeItemPrompt: {fileID: 512818962}
 --- !u!1 &1432834180
 GameObject:
   m_ObjectHideFlags: 0
@@ -13160,7 +13156,7 @@ Transform:
   m_GameObject: {fileID: 1485625650}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 1, z: -0, w: 0}
-  m_LocalPosition: {x: -0.0007, y: 0, z: 0.0077}
+  m_LocalPosition: {x: -0.0327, y: -0.0032, z: 0.0052}
   m_LocalScale: {x: 0.099999994, y: 0.1, z: 0.099999994}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -13186,7 +13182,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 1990a0923abd3e248bdc5db6f773b8ce, type: 2}
+  - {fileID: 2100000, guid: f635ffc26c5fa7445af38b3e09d9d73e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -14615,17 +14611,17 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 627991771}
-        m_TargetAssemblyTypeName: Sugar.AR.Placement.PlanePlacementAR, Assembly-CSharp
-        m_MethodName: Init
-        m_Mode: 1
+      - m_Target: {fileID: 4425418424447569231}
+        m_TargetAssemblyTypeName: Sugar.AR.VFX.DissolveInWorld, Assembly-CSharp
+        m_MethodName: DissolveWorld
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 0
+          m_BoolArgument: 1
         m_CallState: 2
       - m_Target: {fileID: 627991771}
         m_TargetAssemblyTypeName: UnityEngine.Behaviour, UnityEngine
@@ -16307,6 +16303,10 @@ PrefabInstance:
     - target: {fileID: 5203187523841269253, guid: 6082370eb2a7dd944b8b0d14102e13c1, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 2887223583
+      objectReference: {fileID: 0}
+    - target: {fileID: 5989086585974588918, guid: 6082370eb2a7dd944b8b0d14102e13c1, type: 3}
+      propertyPath: outlineLimits.y
+      value: 0.005
       objectReference: {fileID: 0}
     - target: {fileID: 7170116386414476898, guid: 6082370eb2a7dd944b8b0d14102e13c1, type: 3}
       propertyPath: m_LocalPosition.x

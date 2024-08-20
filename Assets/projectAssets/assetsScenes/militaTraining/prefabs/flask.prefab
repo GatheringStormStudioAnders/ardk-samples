@@ -135,7 +135,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1182405655
+  GlobalObjectIdHash: 1277553849
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -239,8 +239,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9cc20634abbdef741a96ea10af8e7ef1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  meshRenderer: {fileID: 4070711022031314460}
-  outlineLimits: {x: 0, y: 0.005}
+  meshRenderer: {fileID: 0}
+  outlineLimits: {x: 0, y: 0}
 --- !u!1 &6846689137003083318
 GameObject:
   m_ObjectHideFlags: 0

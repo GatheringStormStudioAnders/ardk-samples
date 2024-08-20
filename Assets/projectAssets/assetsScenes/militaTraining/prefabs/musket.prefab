@@ -285,7 +285,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 4096267113
+  GlobalObjectIdHash: 1584604762
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -491,15 +491,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9cc20634abbdef741a96ea10af8e7ef1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  meshRenderer: {fileID: 8950319583654516872}
-  outlineLimits: {x: 0, y: 0.005}
+  meshRenderer: {fileID: 0}
+  outlineLimits: {x: 0, y: 0}
 --- !u!4 &7817898076800869351 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 8ff6774c6bf1bff449254e2a08c8b1e4, type: 3}
-  m_PrefabInstance: {fileID: 7778976168426963980}
-  m_PrefabAsset: {fileID: 0}
---- !u!23 &8950319583654516872 stripped
-MeshRenderer:
-  m_CorrespondingSourceObject: {fileID: -7511558181221131132, guid: 8ff6774c6bf1bff449254e2a08c8b1e4, type: 3}
   m_PrefabInstance: {fileID: 7778976168426963980}
   m_PrefabAsset: {fileID: 0}

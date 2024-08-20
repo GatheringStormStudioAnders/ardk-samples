@@ -20,6 +20,7 @@ namespace Sugar.OutlineSystem
 
         private void Start()
         {
+            meshRenderer = GetComponent<Renderer>();
             InstanceOutlineMaterial();
             ChangeOutlineWidth(0);
         }

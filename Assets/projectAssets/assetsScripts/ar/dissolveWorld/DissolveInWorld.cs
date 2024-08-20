@@ -46,7 +46,7 @@ namespace Sugar.AR.VFX
             {
                 newSequence.Insert(0, depthDissolve.DOFloat(1, "_FadeShift", dissolveTime));
                 newSequence.Insert(0, emissionDissolve.DOFloat(1, "_FadeShift", dissolveTime));
-                newSequence.InsertCallback(dissolveTime, () => dissolveInComplete?.Invoke());
+                newSequence.InsertCallback(dissolveTime * 0.5f, () => dissolveInComplete?.Invoke());
             }
             else
             {
