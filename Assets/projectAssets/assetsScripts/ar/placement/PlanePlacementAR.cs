@@ -21,6 +21,7 @@ namespace Sugar.AR.Placement
 
         public GameObject placementIndicator;
         public Transform arContent;
+        public Transform ghostContent;
         public Button placeButton;
 
         public Vector2 scaleLimits;

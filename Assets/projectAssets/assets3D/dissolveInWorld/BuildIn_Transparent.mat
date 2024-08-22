@@ -136,8 +136,8 @@ Material:
     - _EmissionOnly: 0
     - _EmissionOpacity: 1
     - _EnvironmentReflections: 1
-    - _FadeBlur: 0.57
-    - _FadeShift: 1
+    - _FadeBlur: 0.7
+    - _FadeShift: 0
     - _FlipNormal: 0
     - _FlipSmooth: 0
     - _GlossMapScale: 0
@@ -156,7 +156,7 @@ Material:
     - _QueueControl: 0
     - _QueueOffset: 0
     - _ReceiveShadows: 1
-    - _SmoothFade: 0.05
+    - _SmoothFade: 0.102
     - _SmoothMetal: 0
     - _SmoothStrength: 0
     - _SmoothTweak: 1
@@ -178,8 +178,8 @@ Material:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _Emission: {r: 4.2870936, g: 0, b: 0.022445817, a: 0}
     - _EmissionColor: {r: 0.033624236, g: 0.47460008, b: 1.6055586, a: 0}
-    - _FadeDirection: {r: 0, g: 0, b: -1, a: 0}
-    - _NoiseScales: {r: 10, g: 3, b: 0, a: 0}
+    - _FadeDirection: {r: 0, g: 0.2, b: 0, a: 0}
+    - _NoiseScales: {r: 25, g: 8, b: 0, a: 0}
     - _ObjectMinMaxAdjust: {r: -0.25, g: 0.25, b: 0, a: 0}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
     - _Tint: {r: 0.48742133, g: 0.84326106, b: 1, a: 0}

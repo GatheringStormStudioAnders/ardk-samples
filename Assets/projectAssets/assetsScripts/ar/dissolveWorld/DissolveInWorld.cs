@@ -14,7 +14,7 @@ namespace Sugar.AR.VFX
         public UnityEvent dissolveOutComplete;
 
         public Material depthDissolve;
-        public Material emissionDissolve;
+        public Material ghostDissolve;
 
         public Sequence currentSequence;
 
@@ -26,7 +26,7 @@ namespace Sugar.AR.VFX
         private void Start()
         {
             depthDissolve.SetFloat("_FadeShift", 0);
-            emissionDissolve.SetFloat("_FadeShift", 0);
+            ghostDissolve.SetFloat("_FadeShift", 0);
         }
         private void Update()
         {
@@ -45,13 +45,13 @@ namespace Sugar.AR.VFX
             if (state)
             {
                 newSequence.Insert(0, depthDissolve.DOFloat(1, "_FadeShift", dissolveTime));
-                newSequence.Insert(0, emissionDissolve.DOFloat(1, "_FadeShift", dissolveTime));
+                newSequence.Insert(0, ghostDissolve.DOFloat(1, "_FadeShift", dissolveTime));
                 newSequence.InsertCallback(dissolveTime * 0.5f, () => dissolveInComplete?.Invoke());
             }
             else
             {
                 newSequence.Insert(0, depthDissolve.DOFloat(0, "_FadeShift", dissolveTime));
-                newSequence.Insert(0, emissionDissolve.DOFloat(0, "_FadeShift", dissolveTime));
+                newSequence.Insert(0, ghostDissolve.DOFloat(0, "_FadeShift", dissolveTime));
                 newSequence.InsertCallback(dissolveTime, () => dissolveOutComplete?.Invoke());
             }
 

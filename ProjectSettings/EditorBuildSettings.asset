@@ -68,6 +68,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/projectAssets/assetsScenes/militaTraining/militaTraining.unity
     guid: da36ea8a1c42f4e48b64a811e11a534b
+  - enabled: 0
+    path: Assets/projectAssets/assetsScenes/bostonFlag/bostonFlag.unity
+    guid: dea9335636a445e44b4852afca3adab4
   m_configObjects:
     Niantic.Lightship.AR.LightshipSettings: {fileID: 11400000, guid: 05b0489c7d3114fe3b5a5321c06a66dd, type: 2}
     Niantic.Lightship.AR.WPSSettings: {fileID: 11400000, guid: ee6baa83fec89444b99181fc1ccffc2a, type: 2}
