@@ -15,6 +15,9 @@ namespace Sugar.FlagSystem
         public Vector3 minWindForce;
         public Vector3 maxWindForce;
 
+        public List<Vector3> windForces = new List<Vector3>();
+        public int currentWindForce;
+
         public Vector3 targetWindForce;
 
         public float windForceDamping;
@@ -34,24 +37,31 @@ namespace Sugar.FlagSystem
         {
             flagCloth.externalAcceleration = Vector3.MoveTowards(flagCloth.externalAcceleration, targetWindForce, windForceDamping * Time.deltaTime);
 
-            if (flagCloth.externalAcceleration == maxWindForce)
+            if (flagCloth.externalAcceleration == targetWindForce)
             {
                 if(currentTimer <= 0)
                 {
-                    targetWindForce = minWindForce;
-                    currentTimer = Random.Range(windTimer.x, windTimer.y);
-                }
-                else
-                {
-                    currentTimer -= Time.deltaTime;
-                }
-            }
-            if (flagCloth.externalAcceleration == minWindForce)
-            {
-                if (currentTimer <= 0)
-                {
-                    targetWindForce = maxWindForce;
-                    currentTimer = Random.Range(windTimer.x, windTimer.y);
+                    List<int> indexesAvailable = new List<int>();
+
+                    for(int x = 0; x < windForces.Count; x++)
+                    {
+                        indexesAvailable.Add(x);
+                    }
+
+                    indexesAvailable.RemoveAt(currentWindForce);
+                    currentWindForce = Random.Range(0, indexesAvailable.Count);
+                    targetWindForce = windForces[currentWindForce];
+
+                    flagCloth.randomAcceleration = new Vector3(Random.Range(3f, 6f), Random.Range(3f, 6f), 0);
+
+                    if(currentWindForce == 0)
+                    {
+                        currentTimer = Random.Range(0.5f, 1.5f);
+                    }
+                    else
+                    {
+                        currentTimer = Random.Range(windTimer.x, windTimer.y);
+                    }
                 }
                 else
                 {
