@@ -174,7 +174,6 @@ namespace Sugar.AR.Placement
             this.enabled = false;
             placementIndicator.SetActive(true);
 
-
 #endif
             isLocked = true;
             placementIndicator.SetActive(false);

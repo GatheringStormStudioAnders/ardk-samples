@@ -13,6 +13,8 @@ namespace Sugar.AR.VFX
         public UnityEvent dissolveInComplete;
         public UnityEvent dissolveOutComplete;
 
+        public UnityEvent dissolveGhostComplete;
+
         public Material depthDissolve;
         public Material ghostDissolve;
 
@@ -34,28 +36,41 @@ namespace Sugar.AR.VFX
         }
         public void DissolveWorld(bool state)
         {
-            if(currentSequence != null)
-            {
-                currentSequence.Kill();
-                currentSequence = null;
-            }
+            DestroyCurrentTween();
 
             Sequence newSequence = DOTween.Sequence();
 
             if (state)
             {
                 newSequence.Insert(0, depthDissolve.DOFloat(1, "_FadeShift", dissolveTime));
-                newSequence.Insert(0, ghostDissolve.DOFloat(1, "_FadeShift", dissolveTime));
                 newSequence.InsertCallback(dissolveTime * 0.5f, () => dissolveInComplete?.Invoke());
             }
             else
             {
                 newSequence.Insert(0, depthDissolve.DOFloat(0, "_FadeShift", dissolveTime));
-                newSequence.Insert(0, ghostDissolve.DOFloat(0, "_FadeShift", dissolveTime));
                 newSequence.InsertCallback(dissolveTime, () => dissolveOutComplete?.Invoke());
             }
 
             newSequence.Play();
+        }
+
+        public void DissolveGhost()
+        {
+            DestroyCurrentTween();
+
+            Sequence newSequence = DOTween.Sequence();
+
+            newSequence.Insert(0, ghostDissolve.DOFloat(1, "_FadeShift", 2));
+            newSequence.InsertCallback(2, () => dissolveGhostComplete?.Invoke());
+        }
+
+        public void DestroyCurrentTween()
+        {
+            if (currentSequence != null)
+            {
+                currentSequence.Kill();
+                currentSequence = null;
+            }
         }
     }
 }

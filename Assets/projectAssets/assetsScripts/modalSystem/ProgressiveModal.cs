@@ -40,10 +40,9 @@ namespace Sugar.UI
                 currentPage = pages.Count - 1;
             }
 
-            if(currentPage > pages.Count - 1)
+            if(currentPage >= pages.Count)
             {
-                FinishPage();
-                return;
+                currentPage = 0;
             }
 
             UpdatePageUI();
@@ -55,15 +54,9 @@ namespace Sugar.UI
         {
             for (int i = 0; i < pages.Count; i++)
             {
-                if (i == currentPage)
-                {
-                    pages[i].gameObject.SetActive(true);
-                }
-                else
-                {
-                    pages[i].gameObject.SetActive(false);
-                }
+                pages[i].gameObject.SetActive(false);
             }
+            pages[currentPage].gameObject.SetActive(true);
         }
 
         public void UpdatePipUI()

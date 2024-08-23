@@ -27,7 +27,13 @@ namespace Sugar.FlagSystem
         public Vector2 windTimer;
         public float currentTimer;
 
-        private void Start()
+        //private void Start()
+        //{
+        //    targetWindForce = maxWindForce;
+        //    currentTimer = Random.Range(windTimer.x, windTimer.y);
+        //}
+
+        public void Init()
         {
             targetWindForce = maxWindForce;
             currentTimer = Random.Range(windTimer.x, windTimer.y);
