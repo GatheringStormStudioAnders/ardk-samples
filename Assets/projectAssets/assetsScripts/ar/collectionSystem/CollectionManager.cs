@@ -21,13 +21,12 @@ namespace Sugar.CollectionSystem
                 if (!requiredItems.Contains(collectable))
                 {
                     requiredItems.Add(collectable);
-
+                    ui.UpdateList();
                     if (requiredItems.Count >= 7)
                     {
                         ui.closeItemPrompt.onClick.AddListener(() => ui.CompleteTraining());
                     }
                 }
-
                 ui.OpenItemInfo(collectable.data);
             }
             else

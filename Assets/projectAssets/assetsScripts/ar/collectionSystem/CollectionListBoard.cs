@@ -7,7 +7,6 @@ namespace Sugar.CollectionSystem
     public class CollectionListBoard : MonoBehaviour
     {
         public CollectionGUI ui;
-        public GameObject boardNote;
 
         public bool isOpen;
         public void TryAccessBoard(Transform target)
@@ -17,7 +16,6 @@ namespace Sugar.CollectionSystem
                 CollectionListBoard board = target.GetComponent<CollectionListBoard>();
                 if (board != null)
                 {
-                    boardNote.SetActive(false);
                     board.ui.OpenListUI();
                     SetOpenState(true);
                 }

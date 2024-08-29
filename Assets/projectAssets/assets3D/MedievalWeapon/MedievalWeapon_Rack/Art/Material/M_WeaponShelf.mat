@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: M_WeaponShelf
-  m_Shader: {fileID: 4800000, guid: d4419d5eb4b6a6a49b1d6eeaf0203133, type: 3}
+  m_Shader: {fileID: 4800000, guid: e703e9e2ff89868408a1cb5e0a59d9cc, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -128,5 +128,6 @@ Material:
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _Smoothstep: {r: 0, g: 3, b: 0, a: 0}
     - _Tint: {r: 1, g: 1, b: 1, a: 0}
   m_BuildTextureStacks: []
