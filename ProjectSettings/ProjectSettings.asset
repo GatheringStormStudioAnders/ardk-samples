@@ -13,7 +13,7 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: sugarCreative
-  productName: BostonMilitia
+  productName: BostonMilita
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
@@ -142,6 +142,15 @@ PlayerSettings:
   bundleVersion: 1.1
   preloadedAssets:
   - {fileID: 4800000, guid: b02d09082cbc14569ae46c12d9836abc, type: 3}
+  - {fileID: 7009581921454678722, guid: 35d0a95eeda964a40a7be7be884e643f, type: 2}
+  - {fileID: 11400000, guid: 14c98e65065b53b499844f14f92f2e80, type: 2}
+  - {fileID: 11400000, guid: 217d86e680eb34b97bb0bb2a6ec7bfac, type: 2}
+  - {fileID: 11400000, guid: 05b0489c7d3114fe3b5a5321c06a66dd, type: 2}
+  - {fileID: 4800000, guid: b1d4c517492046e1a4e4cc49b0b73b42, type: 3}
+  - {fileID: 4800000, guid: 2b7e3540272684e0b8e12fed2c4609de, type: 3}
+  - {fileID: 8213019239342420600, guid: 2751b5cd4300340c38aef3e21700408a, type: 2}
+  - {fileID: 4800000, guid: c9f956787b1d945e7b36e0516201fc76, type: 3}
+  - {fileID: 4800000, guid: 0945859e5a1034c2cb6dce53cb4fb899, type: 3}
   metroInputSource: 0
   wsaTransparentSwapchain: 0
   m_HolographicPauseOnTrackingLoss: 1
@@ -162,7 +171,7 @@ PlayerSettings:
   androidSupportedAspectRatio: 1
   androidMaxAspectRatio: 2.1
   applicationIdentifier:
-    Android: com.sugarCreative.BostonMilitia
+    Android: com.sugarCreative.BostonMilita
     Standalone: com.nianticlabs.ar.ardksamples
     iPhone: com.nianticlabs.ar.ardksamples
   buildNumber:
@@ -236,6 +245,7 @@ PlayerSettings:
   iOSMetalForceHardShadows: 0
   metalEditorSupport: 1
   metalAPIValidation: 1
+  metalCompileShaderBinary: 0
   iOSRenderExtraFrameOnPause: 0
   iosCopyPluginsCodeInsteadOfSymlink: 0
   appleDeveloperTeamID: 
@@ -255,12 +265,12 @@ PlayerSettings:
   templateDefaultScene: Assets/Scenes/SampleScene.unity
   useCustomMainManifest: 1
   useCustomLauncherManifest: 0
-  useCustomMainGradleTemplate: 1
+  useCustomMainGradleTemplate: 0
   useCustomLauncherGradleManifest: 0
   useCustomBaseGradleTemplate: 0
   useCustomGradlePropertiesTemplate: 0
   useCustomGradleSettingsTemplate: 0
-  useCustomProguardFile: 1
+  useCustomProguardFile: 0
   AndroidTargetArchitectures: 3
   AndroidTargetDevices: 0
   AndroidSplashScreenScale: 0
@@ -876,23 +886,23 @@ PlayerSettings:
   webGLMemoryGeometricGrowthCap: 96
   webGLPowerPreference: 2
   scriptingDefineSymbols:
-    Android: AMPLIFY_SHADER_EDITOR;DOTWEEN;NIANTIC_LIGHTSHIP_AR_LOADER_ENABLED
-    EmbeddedLinux: DOTWEEN
-    GameCoreScarlett: DOTWEEN
-    GameCoreXboxOne: DOTWEEN
-    LinuxHeadlessSimulation: DOTWEEN
-    Nintendo Switch: DOTWEEN
-    PS4: DOTWEEN
-    PS5: DOTWEEN
-    QNX: DOTWEEN
-    Stadia: DOTWEEN
-    Standalone: NIANTIC_LIGHTSHIP_AR_LOADER_ENABLED;DOTWEEN;AMPLIFY_SHADER_EDITOR
-    VisionOS: DOTWEEN
-    WebGL: DOTWEEN
-    Windows Store Apps: DOTWEEN
-    XboxOne: DOTWEEN
-    iPhone: NIANTIC_LIGHTSHIP_AR_LOADER_ENABLED;UNITY_XR_ARKIT_LOADER_ENABLED;DOTWEEN
-    tvOS: DOTWEEN
+    Android: AMPLIFY_SHADER_EDITOR;DOTWEEN;NIANTIC_LIGHTSHIP_AR_LOADER_ENABLED;EPO_DOTWEEN;URP_OUTLINE
+    EmbeddedLinux: DOTWEEN;EPO_DOTWEEN;URP_OUTLINE
+    GameCoreScarlett: DOTWEEN;EPO_DOTWEEN;URP_OUTLINE
+    GameCoreXboxOne: DOTWEEN;EPO_DOTWEEN;URP_OUTLINE
+    LinuxHeadlessSimulation: DOTWEEN;EPO_DOTWEEN;URP_OUTLINE
+    Nintendo Switch: DOTWEEN;EPO_DOTWEEN;URP_OUTLINE
+    PS4: DOTWEEN;EPO_DOTWEEN;URP_OUTLINE
+    PS5: DOTWEEN;EPO_DOTWEEN;URP_OUTLINE
+    QNX: DOTWEEN;EPO_DOTWEEN;URP_OUTLINE
+    Stadia: DOTWEEN;EPO_DOTWEEN;URP_OUTLINE
+    Standalone: NIANTIC_LIGHTSHIP_AR_LOADER_ENABLED;DOTWEEN;AMPLIFY_SHADER_EDITOR;EPO_DOTWEEN;URP_OUTLINE
+    VisionOS: DOTWEEN;EPO_DOTWEEN;URP_OUTLINE
+    WebGL: DOTWEEN;EPO_DOTWEEN;URP_OUTLINE
+    Windows Store Apps: DOTWEEN;EPO_DOTWEEN;URP_OUTLINE
+    XboxOne: DOTWEEN;EPO_DOTWEEN;URP_OUTLINE
+    iPhone: NIANTIC_LIGHTSHIP_AR_LOADER_ENABLED;UNITY_XR_ARKIT_LOADER_ENABLED;DOTWEEN;EPO_DOTWEEN;URP_OUTLINE
+    tvOS: DOTWEEN;EPO_DOTWEEN;URP_OUTLINE
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend:
@@ -948,6 +958,7 @@ PlayerSettings:
   metroTileBackgroundColor: {r: 0.13333334, g: 0.17254902, b: 0.21568628, a: 0}
   metroSplashScreenBackgroundColor: {r: 0.12941177, g: 0.17254902, b: 0.21568628, a: 1}
   metroSplashScreenUseBackgroundColor: 0
+  syncCapabilities: 0
   platformCapabilities: {}
   metroTargetDeviceFamilies: {}
   metroFTAName: 

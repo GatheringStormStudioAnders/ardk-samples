@@ -41,6 +41,7 @@ namespace Sugar.UI
         public Inspect3DObject inspectSystem;
         public List<CollectableSlotUI> collectableUISlots = new List<CollectableSlotUI>();
         public GameObject closeButton;
+        public GameObject noteBackground;
 
         public int isPickedUp;
 
@@ -84,10 +85,12 @@ namespace Sugar.UI
             if(index == 0)
             {
                 closeButton.SetActive(false);
+                noteBackground.SetActive(false);
             }
             else 
             {
                 closeButton.SetActive(true);
+                noteBackground.SetActive(true);
                 inspectSystem.enabled = true;
             }
             isPickedUp = index;

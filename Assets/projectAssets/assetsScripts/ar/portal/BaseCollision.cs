@@ -5,7 +5,7 @@ namespace Sugar.Collision
     using UnityEngine;
     using Unity.Netcode;
 
-    public class BaseCollision : NetworkBehaviour
+    public class BaseCollision : MonoBehaviour
     {
         public void OnTriggerEnter(Collider col)
         {

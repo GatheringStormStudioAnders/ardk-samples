@@ -1,0 +1,173 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1271854506351397654
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3108810914194896825}
+  - component: {fileID: 267298321176612787}
+  - component: {fileID: 2654890822620657278}
+  - component: {fileID: 2429677721848678225}
+  m_Layer: 0
+  m_Name: Soldiers and Sailors Monument(LocationMesh)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3108810914194896825
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1271854506351397654}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1617213688969494956}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!33 &267298321176612787
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1271854506351397654}
+  m_Mesh: {fileID: -5495919448338769775, guid: 0c7bec492ba6cc441ac5410275d24429, type: 2}
+--- !u!23 &2654890822620657278
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1271854506351397654}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: -486949064039816757, guid: 0c7bec492ba6cc441ac5410275d24429, type: 2}
+  - {fileID: 6451905783367763440, guid: 0c7bec492ba6cc441ac5410275d24429, type: 2}
+  - {fileID: 1663348713073615346, guid: 0c7bec492ba6cc441ac5410275d24429, type: 2}
+  - {fileID: 7214755657354612851, guid: 0c7bec492ba6cc441ac5410275d24429, type: 2}
+  - {fileID: 1414847526817533748, guid: 0c7bec492ba6cc441ac5410275d24429, type: 2}
+  - {fileID: 8027952474378518809, guid: 0c7bec492ba6cc441ac5410275d24429, type: 2}
+  - {fileID: -3221673246290374497, guid: 0c7bec492ba6cc441ac5410275d24429, type: 2}
+  - {fileID: 363412448430376998, guid: 0c7bec492ba6cc441ac5410275d24429, type: 2}
+  - {fileID: -2630541649642065471, guid: 0c7bec492ba6cc441ac5410275d24429, type: 2}
+  - {fileID: 8272050161916258166, guid: 0c7bec492ba6cc441ac5410275d24429, type: 2}
+  - {fileID: 8695909922540131174, guid: 0c7bec492ba6cc441ac5410275d24429, type: 2}
+  - {fileID: 6772721169419002420, guid: 0c7bec492ba6cc441ac5410275d24429, type: 2}
+  - {fileID: -2334192176325423415, guid: 0c7bec492ba6cc441ac5410275d24429, type: 2}
+  - {fileID: 1327234625456678492, guid: 0c7bec492ba6cc441ac5410275d24429, type: 2}
+  - {fileID: -1785612408675172185, guid: 0c7bec492ba6cc441ac5410275d24429, type: 2}
+  - {fileID: 7376442002961177281, guid: 0c7bec492ba6cc441ac5410275d24429, type: 2}
+  - {fileID: 4383285114031476370, guid: 0c7bec492ba6cc441ac5410275d24429, type: 2}
+  - {fileID: 3483680845931594480, guid: 0c7bec492ba6cc441ac5410275d24429, type: 2}
+  - {fileID: -5030070795105685060, guid: 0c7bec492ba6cc441ac5410275d24429, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &2429677721848678225
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1271854506351397654}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5b5d95f90efd4bf0894371fc8e869be, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Position: {x: 0, y: 0, z: 0}
+  Rotation: {x: 0, y: 0, z: 0, w: 0}
+  Scale: {x: 1, y: 1, z: 1}
+  FixScale: 1
+  FixPosition: 1
+  FixRotation: 1
+--- !u!1 &6269680515991487688
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1617213688969494956}
+  - component: {fileID: 7215575113665625374}
+  m_Layer: 0
+  m_Name: Soldiers and Sailors Monument(MockLocation)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1617213688969494956
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6269680515991487688}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 3108810914194896825}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7215575113665625374
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6269680515991487688}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5b5d95f90efd4bf0894371fc8e869be, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Position: {x: 0, y: 0, z: 0}
+  Rotation: {x: 0, y: 0, z: 0, w: 0}
+  Scale: {x: 1, y: 1, z: 1}
+  FixScale: 1
+  FixPosition: 1
+  FixRotation: 1

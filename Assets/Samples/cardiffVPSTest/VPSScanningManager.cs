@@ -40,6 +40,14 @@ public class VPSScanningManager : MonoBehaviour
     //    onVPSScanSuccessful?.Invoke();
     //}
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            onVPSScanSuccessful.Invoke();
+        }
+    }
+
     private void OnLocationTrackingStateChanged(ARLocationTrackedEventArgs args)
     {
         var trackedLocation = args.ARLocation;
@@ -54,15 +62,6 @@ public class VPSScanningManager : MonoBehaviour
             }
         }
     }
-
-    //private void Update()
-    //{
-    //    if (Input.GetKeyDown(KeyCode.Space))
-    //    {
-    //        Debug.Log("PretendSuccess");
-    //        onVPSScanSuccessful?.Invoke();
-    //    }
-    //}
 }
 
 [System.Serializable]
